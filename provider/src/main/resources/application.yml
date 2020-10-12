@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: demo-dubbo-provider
+  # 热部署 排除静态资源文件
+  devtools:
+    restart:
+      exclude: public/**,resources/**,static/**,templates/**
+dubbo:
+  application:
+    id: demo-dubbo-provider:8080
+    name: demo-dubbo-provider
+    qos-port: '22222' # 22222
+    version: 1.0.0
+  registry:
+#    id: dubbo
+#    check: false
+    group: demo
+    address: nacos://47.94.148.69:8848
+#    protocol: zookeeper
+#    address: zookeeper://127.0.0.1:2181
+#    timeout: '10000'
+#    register: false
+  protocol:
+    id: dubbo
+    status: server
+    name: dubbo
+    port: '20880' # 20880
+    threadpool: cached
+#  protocols:
+#    rest:
+#      name: rest
+#      server: tomcat
+#      port: 8080
+#    dubbo:
+#      name: dubbo
+#      port: 20880
+  provider:
+#    filter: dubboContextFilter
+    timeout: '10000'
+    # 延迟暴露
+#    delay: 10000
+  consumer:
+    check: false
+    timeout: '10000' # dubbo默认以consumer中配置的时间为准
+logging:
+  level:
+    root: ERROR
+    com.example: DEBUG
+    # 2.0 后的spring boot 需要TRACE级别才能看到RequestMappingHandlerMapping加载web控制器的日志
+    # 1.0 是 INFO级的
+#    org.springframework.boot: DEBUG
+#    org.springframework.web: TRACE
+#    javax.servlet: TRACE
+#    org.apache.catalina: TRACE
