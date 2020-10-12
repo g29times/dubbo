@@ -14,4 +14,4 @@ nacos - 阿里云
 
 #### 测试
 测试类：com.example.demo.controller.HelloController  
-测试地址：http://localhost:8082/sayHello?name=1
+测试地址：http://localhost:8082/sayHello?name=World
