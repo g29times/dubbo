@@ -11,3 +11,7 @@ https://my.oschina.net/yunduansing/blog/4467033
 #### 注册中心
 zk - 本地  
 nacos - 阿里云
+
+#### 测试
+测试类：com.example.demo.controller.HelloController  
+测试地址：http://localhost:8082/sayHello?name=1
