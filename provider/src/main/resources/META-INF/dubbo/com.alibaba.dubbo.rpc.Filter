@@ -1,0 +1,2 @@
+dubboProviderContextFilter=com.mootal.id.config.DubboProviderContextFilter
+dubboConsumerContextFilter=com.mootal.id.config.DubboConsumerContextFilter

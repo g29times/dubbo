@@ -35,11 +35,12 @@ dubbo:
 #      name: dubbo
 #      port: 20880
   provider:
-#    filter: dubboContextFilter
+    filter: dubboProviderContextFilter
     timeout: '10000'
     # 延迟暴露
 #    delay: 10000
   consumer:
+    filter: dubboConsumerContextFilter
     check: false
     timeout: '10000' # dubbo默认以consumer中配置的时间为准
 logging:
