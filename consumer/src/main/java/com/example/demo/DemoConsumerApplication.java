@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * /_______  /  \/\_/  |__| |__|    |__|
  * .       \/
  * <p>
- * <a href="www.google.com">google</a>
+ * nacos http://47.94.148.69:8848/nacos/#/serviceManagement?dataId=&group=&appName=&namespace=&pageSize=&pageNo=&serverId=
  *
  * @author li tong
  * @description:

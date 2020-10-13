@@ -24,6 +24,6 @@ public class DemoServiceImpl implements DemoService {
     @Override
     public String sayHello(String name) {
         System.out.println("//Dubbo > name:" + name);
-        return "Hello " + name;
+        return "Hello Dubbo: " + name;
     }
 }

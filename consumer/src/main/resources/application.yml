@@ -27,13 +27,18 @@ dubbo:
     port: '20881' # 20880
     threadpool: cached
   provider:
-#    filter: dubboContextFilter
+    filter: dubboProviderContextFilter
+    loadbalance: dev
     timeout: '10000'
     # 延迟暴露
-#    delay: 10000
+    delay: 10000
   consumer:
+    filter: dubboConsumerContextFilter
+    loadbalance: dev
     check: false
     timeout: '10000' # dubbo默认以consumer中配置的时间为准
+  loadbalance:
+    dev: 192.168.*.*,172.*.*.*
 logging:
   level:
     root: ERROR

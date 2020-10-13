@@ -36,7 +36,7 @@ public class HelloController {
     }
 
     /**
-     * @see web http://47.94.148.69:8848/nacos/#/serviceManagement?dataId=&group=&appName=&namespace=&pageSize=&pageNo=&serverId=
+     * nacos http://47.94.148.69:8848/nacos/#/serviceManagement?dataId=&group=&appName=&namespace=&pageSize=&pageNo=&serverId=
      * @param name
      * @return
      */
