@@ -12,4 +12,17 @@
     <artifactId>provider</artifactId>
     <name>demo-dubbo-provider</name>
 
+    <build>
+        <plugins>
+            <!-- 不部署provider部分代码-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven.deploy.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
