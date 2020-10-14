@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
  * <p>
  *
  * <a href="https://www.cnblogs.com/oldtrafford/p/8722790.html">一种dubbo逻辑路由方案</a><p>
- * <a href="https://blog.csdn.net/zguoshuaiiii/article/details/78386948">dubbo自定义路由规则实际应用</a>
  *
  * @author li tong
  * @description: SPI扩展路由示范

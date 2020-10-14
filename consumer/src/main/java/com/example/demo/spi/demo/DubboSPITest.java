@@ -2,7 +2,7 @@ package com.example.demo.spi.demo;
 
 import org.apache.dubbo.common.extension.ExtensionLoader;
 import org.apache.dubbo.rpc.cluster.LoadBalance;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * . _________         .__   _____   __
