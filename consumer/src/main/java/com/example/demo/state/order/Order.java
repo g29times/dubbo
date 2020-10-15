@@ -17,4 +17,32 @@ package com.example.demo.state.order;
  * @since 1.0
  */
 public class Order {
+
+    private Long id;
+
+    private StateApi<Order> state;
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", state=" + state +
+                '}';
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public StateApi<Order> getState() {
+        return state;
+    }
+
+    public void setState(StateApi<Order> state) {
+        this.state = state;
+    }
 }

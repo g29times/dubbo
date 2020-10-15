@@ -1,8 +1,7 @@
 package com.example.demo.state.order.strategy;
 
-import com.example.demo.state.order.ContextApi;
-import com.example.demo.state.order.Order;
-import com.example.demo.state.order.StrategyApi;
+import com.example.demo.state.order.*;
+import org.aspectj.weaver.ast.Or;
 
 /**
  * . _________         .__   _____   __
@@ -22,16 +21,17 @@ import com.example.demo.state.order.StrategyApi;
  */
 public class OrderReverseStrategy implements StrategyApi {
 
-    private ContextApi context;
+    private final OrderWorkFlow context;
 
-    public OrderReverseStrategy(ContextApi context) {
-        this.context = context;
+    public OrderReverseStrategy(ContextApi<Order> context) {
+        this.context = (OrderWorkFlow) context;
     }
 
     @Override
     public void request(Order order) {
-        context.getState().reverse(order);
-        context.getState().inform(order);
-        context.getState().log(order);
+        StateApi<Order> state = context.getReverseState();
+        state.reverse(order);
+        state.inform(order);
+        state.log(order);
     }
 }

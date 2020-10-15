@@ -15,18 +15,18 @@ import com.example.demo.state.order.OrderWorkFlow;
  * <a href="www.google.com">google</a>
  *
  * @author li tong
- * @description: 创建
- * @date 2020/10/14 18:06
+ * @description: 退款单
+ * @date 2020/10/14 18:09
  * @see Object
  * @since 1.0
  */
-public class OrderCreateState extends OrderStateAbstract {
+public class OrderReverseState extends OrderStateAbstract {
 
-    private int value = 1;
+    private int value = 3;
 
     private final OrderWorkFlow context;
 
-    public OrderCreateState(ContextApi<Order> context) {
+    public OrderReverseState(ContextApi<Order> context) {
         this.context = (OrderWorkFlow) context;
         this.context.setState(this);
     }
@@ -49,12 +49,6 @@ public class OrderCreateState extends OrderStateAbstract {
     @Override
     public String toString() {
         return getState() + "";
-    }
-
-    @Override
-    public void update(Order order) {
-        this.context.setState(this);
-        super.update(order);
     }
 
 }

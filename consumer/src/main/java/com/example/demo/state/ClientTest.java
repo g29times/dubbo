@@ -7,7 +7,7 @@ import com.example.demo.state.demo.State;
 import com.example.demo.state.order.*;
 import com.example.demo.state.order.StateApi;
 import com.example.demo.state.order.state.OrderCreateState;
-import com.example.demo.state.order.state.OrderReturnState;
+import com.example.demo.state.order.state.OrderReverseState;
 import com.example.demo.state.order.strategy.OrderCreateStrategy;
 import com.example.demo.state.order.strategy.OrderReverseStrategy;
 import com.example.demo.state.order.StrategyApi;
@@ -32,21 +32,34 @@ public class ClientTest {
 
     public static void main(String[] args) {
 //        demo();
-        order();
+//        orderV1();
+        orderV2();
     }
 
-    private static void order() {
-        ContextApi orderFlow = new OrderWorkFlow();
+    private static void orderV2() {
+        ContextApi<Order> orderFlow = new OrderWorkFlow();
+        Order order = new Order();
+        order.setId(1234L);
+//        StateApi<Order> create = new OrderCreateState(orderFlow);
+//        order.setState(create);
+        orderFlow.setStrategy(new OrderCreateStrategy(orderFlow)).request(order);
+//        StateApi<Order> reverse = new OrderReverseState(orderFlow);
+//        order.setState(reverse);
+        orderFlow.setStrategy(new OrderReverseStrategy(orderFlow)).request(order);
+    }
+
+    private static void orderV1() {
+        ContextApi<Order> orderFlow = new OrderWorkFlow();
         Order order = new Order();
 
-        StateApi create = new OrderCreateState(orderFlow);
+        StateApi<Order> create = new OrderCreateState(orderFlow);
         orderFlow.setState(create);
         StrategyApi createStrategy = new OrderCreateStrategy(orderFlow);
         orderFlow.setStrategy(createStrategy);
         orderFlow.request(order);
         System.out.println();
 
-        StateApi reverse = new OrderReturnState(orderFlow);
+        StateApi<Order> reverse = new OrderReverseState(orderFlow);
         orderFlow.setState(reverse);
         StrategyApi reverseStrategy = new OrderReverseStrategy(orderFlow);
         orderFlow.setStrategy(reverseStrategy);

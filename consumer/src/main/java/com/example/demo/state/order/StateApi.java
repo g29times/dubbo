@@ -16,12 +16,12 @@ package com.example.demo.state.order;
  * @see Object
  * @since 1.0
  */
-public interface StateApi {
+public interface StateApi<T> {
 
     /**
      * 获取上下文
      */
-    ContextApi getContext();
+    ContextApi<T> getContext();
 
     /**
      * 获取当前状态
@@ -30,31 +30,25 @@ public interface StateApi {
      */
     int getState();
 
+    void setState(int state);
+
     /**
      * 更新状态
      */
-    default void update(Order order) {
-        System.out.println(getContext().toString() + "_" + order.hashCode() + "更新订单：" + getState());
-    }
+    void update(T t);
 
     /**
      * 逆向状态（退款）
      */
-    default void reverse(Order order) {
-        System.out.println(getContext().toString() + "_" + order.hashCode() + "逆向订单：" + getState());
-    }
+    void reverse(T t);
 
     /**
      * 下发
      */
-    default void inform(Order order) {
-        System.out.println(getContext().toString() + "_" + order.hashCode() + "订单下发：" + getState());
-    }
+    void inform(T t);
 
     /**
      * 操作日志（快照）
      */
-    default void log(Order order) {
-        System.out.println(getContext().toString() + "_" + order.hashCode() + "操作日志：" + getState());
-    }
+    void log(T t);
 }

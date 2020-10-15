@@ -1,8 +1,6 @@
 package com.example.demo.state.order.strategy;
 
-import com.example.demo.state.order.ContextApi;
-import com.example.demo.state.order.Order;
-import com.example.demo.state.order.StrategyApi;
+import com.example.demo.state.order.*;
 
 /**
  * . _________         .__   _____   __
@@ -22,16 +20,17 @@ import com.example.demo.state.order.StrategyApi;
  */
 public class OrderCreateStrategy implements StrategyApi {
 
-    private ContextApi context;
+    private final OrderWorkFlow context;
 
-    public OrderCreateStrategy(ContextApi context) {
-        this.context = context;
+    public OrderCreateStrategy(ContextApi<Order> context) {
+        this.context = (OrderWorkFlow) context;
     }
 
     @Override
     public void request(Order order) {
-        context.getState().update(order);
-        context.getState().inform(order);
-        context.getState().log(order);
+        StateApi<Order> state = context.getCreateState();
+        state.update(order);
+        state.inform(order);
+        state.log(order);
     }
 }
