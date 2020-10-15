@@ -5,6 +5,12 @@ spring:
   devtools:
     restart:
       exclude: public/**,resources/**,static/**,templates/**
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 47.94.148.69:8848
+        group: demo-dubbo # nacos用
+
 dubbo:
   application:
     id: demo-dubbo-consumer:8081
@@ -14,7 +20,7 @@ dubbo:
   registry:
 #    id: dubbo
 #    check: false
-    group: demo
+    group: demo-dubbo # nacos用
     address: nacos://47.94.148.69:8848
 #    protocol: zookeeper
 #    address: zookeeper://127.0.0.1:2181
@@ -39,6 +45,7 @@ dubbo:
     timeout: '10000' # dubbo默认以consumer中配置的时间为准
   loadbalance:
     dev: 192.168.*.*,172.*.*.*
+
 logging:
   level:
     root: ERROR

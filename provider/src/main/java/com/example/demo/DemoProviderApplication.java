@@ -3,6 +3,7 @@ package com.example.demo;
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 /**
  * . _________         .__   _____   __
@@ -20,6 +21,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @see Object
  * @since 1.0
  */
+@EnableDiscoveryClient
 @EnableDubbo(scanBasePackages = {"com.example.demo.api"})
 @SpringBootApplication
 public class DemoProviderApplication {

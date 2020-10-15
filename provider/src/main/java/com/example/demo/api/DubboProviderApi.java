@@ -16,6 +16,11 @@ package com.example.demo.api;
  * @see Object
  * @since 1.0
  */
-public interface DemoService {
+public interface DubboProviderApi {
+    /**
+     * sayHello
+     * @param name name
+     * @return name
+     */
     String sayHello(String name);
 }

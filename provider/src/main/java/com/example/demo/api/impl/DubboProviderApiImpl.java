@@ -1,6 +1,6 @@
 package com.example.demo.api.impl;
 
-import com.example.demo.api.DemoService;
+import com.example.demo.api.DubboProviderApi;
 import org.apache.dubbo.config.annotation.DubboService;
 
 /**
@@ -19,11 +19,11 @@ import org.apache.dubbo.config.annotation.DubboService;
  * @see Object
  * @since 1.0
  */
-@DubboService(version = "1.0.0", interfaceClass = DemoService.class, protocol = {/*"rest", */"dubbo"})
-public class DemoServiceImpl implements DemoService {
+@DubboService(version = "1.0.0", interfaceClass = DubboProviderApi.class, protocol = {/*"rest", */"dubbo"})
+public class DubboProviderApiImpl implements DubboProviderApi {
     @Override
     public String sayHello(String name) {
-        System.out.println("//Dubbo > name:" + name);
-        return "Hello Dubbo: " + name;
+        System.out.println("Dubbo//sayHello: " + name);
+        return "Name: " + name;
     }
 }

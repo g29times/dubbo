@@ -2,6 +2,8 @@ package com.example.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
  * . _________         .__   _____   __
@@ -19,6 +21,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @see Object
  * @since 1.0
  */
+@EnableFeignClients
+@EnableDiscoveryClient
 @SpringBootApplication
 public class DemoConsumerApplication {
     public static void main(String[] args) {

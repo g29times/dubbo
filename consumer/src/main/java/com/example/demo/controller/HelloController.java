@@ -1,9 +1,11 @@
 package com.example.demo.controller;
 
-import com.example.demo.api.DemoService;
+import com.example.demo.api.DubboProviderApi;
+import com.example.demo.api.FeignClientApi;
+import com.example.demo.api.UserDTO;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -25,25 +27,44 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HelloController {
 
-    @DubboReference(version = "1.0.0", timeout = 60000, check = false)
-    private DemoService demoService;
-
-    @GetMapping
-    @RequestMapping("/hello")
-    public String hello(String name) {
-        System.out.println("//Rest > /hello name:" + name);
-        return "Hello" + name;
+    @GetMapping("/ok")
+    public String ok() {
+        System.out.println("ok");
+        return "this is client";
     }
+
+    @DubboReference(version = "1.0.0", timeout = 60000, check = false)
+    private DubboProviderApi dubboProviderApi;
 
     /**
      * nacos http://47.94.148.69:8848/nacos/#/serviceManagement?dataId=&group=&appName=&namespace=&pageSize=&pageNo=&serverId=
-     * @param name
-     * @return
+     * http://localhost:8082/dubboHello?name=1
      */
-    @GetMapping
-    @RequestMapping("/sayHello")
-    public String sayHello(String name) {
-        System.out.println("//Rest > /sayHello name:" + name);
-        return demoService.sayHello(name);
+    @GetMapping("/dubboHello")
+    public String dubboHello(String name) {
+        System.out.println("Client > dubbo, name=" + name);
+        return dubboProviderApi.sayHello(name);
+    }
+
+    @Autowired
+    private FeignClientApi feignClientApi;
+
+    /**
+     * http://localhost:8082/feignHello?name=1
+     */
+    @GetMapping("/feignHello")
+    public String feignHello(String name) {
+        System.out.println("Client > feign, name=" + name);
+        return feignClientApi.hello(name);
+    }
+
+    /**
+     * http://localhost:8082/feignUser?id=1&name=%E4%B8%89
+     */
+    @GetMapping("/feignUser")
+    public String feignUser(Long id, String name) {
+        UserDTO user = new UserDTO(id, name);
+        System.out.println("Client > feign, user=" + user);
+        return feignClientApi.user(user);
     }
 }
