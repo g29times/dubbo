@@ -18,12 +18,27 @@ import com.example.demo.state.order.*;
  * @see Object
  * @since 1.0
  */
-public class OrderCreateStrategy implements StrategyApi {
+public class OrderCreateStrategy implements StrategyApi<Order> {
 
-    private final OrderWorkFlow context;
+    private OrderWorkFlow context;
 
     public OrderCreateStrategy(ContextApi<Order> context) {
         this.context = (OrderWorkFlow) context;
+    }
+
+    public OrderCreateStrategy() {
+    }
+
+    public OrderCreateStrategy(Order order) {
+        System.out.println(order);
+    }
+
+    public static OrderCreateStrategy getInstance() {
+        return new OrderCreateStrategy();
+    }
+
+    public static void getInstance(Order order) {
+        System.out.println(order);
     }
 
     @Override

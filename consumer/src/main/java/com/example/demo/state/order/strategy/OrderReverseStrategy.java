@@ -19,7 +19,7 @@ import org.aspectj.weaver.ast.Or;
  * @see Object
  * @since 1.0
  */
-public class OrderReverseStrategy implements StrategyApi {
+public class OrderReverseStrategy implements StrategyApi<Order> {
 
     private final OrderWorkFlow context;
 

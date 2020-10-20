@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
  * /_______  /  \/\_/  |__| |__|    |__|
  * .       \/
  * <p>
- * <a href="www.google.com">google</a>
+ * <a href="http://dubbo.apache.org/zh-cn/docs/source_code_guide/dubbo-spi.html">dubbo-spi</a>
  *
  * @author li tong
  * @description:

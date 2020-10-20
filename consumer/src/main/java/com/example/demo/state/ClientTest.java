@@ -33,16 +33,16 @@ public class ClientTest {
     public static void main(String[] args) {
 //        demo();
 //        orderV1();
-        orderV2();
+//        orderV2();
     }
 
-    private static void orderV2() {
+    private void orderV2() {
         ContextApi<Order> orderFlow = new OrderWorkFlow();
         Order order = new Order();
         order.setId(1234L);
 //        StateApi<Order> create = new OrderCreateState(orderFlow);
 //        order.setState(create);
-        orderFlow.setStrategy(new OrderCreateStrategy(orderFlow)).request(order);
+        orderFlow.setStrategy(OrderCreateStrategy::new).request(order);
 //        StateApi<Order> reverse = new OrderReverseState(orderFlow);
 //        order.setState(reverse);
         orderFlow.setStrategy(new OrderReverseStrategy(orderFlow)).request(order);

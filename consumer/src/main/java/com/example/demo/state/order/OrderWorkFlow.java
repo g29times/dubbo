@@ -60,7 +60,7 @@ public class OrderWorkFlow implements ContextApi<Order> {
     /**
      * 持有一个Strategy类型的对象实例
      */
-    private StrategyApi strategy;
+    private StrategyApi<Order> strategy;
 
     @Override
     public StateApi<Order> getState() {
@@ -73,8 +73,9 @@ public class OrderWorkFlow implements ContextApi<Order> {
     }
 
     @Override
-    public ContextApi<Order> setStrategy(StrategyApi strategy) {
+    public ContextApi<Order> setStrategy(StrategyApi<Order> strategy) {
         this.strategy = strategy;
+        System.out.println(strategy);
         return this;
     }
 

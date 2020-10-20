@@ -22,13 +22,12 @@ public interface ContextApi<T> {
     /**
      * 设定固定策略
      */
-    ContextApi<T> setStrategy(StrategyApi strategy);
+    ContextApi<T> setStrategy(StrategyApi<T> strategy);
 
     /**
-     * 添加策略到流式管道策略组
+     * TODO 添加策略到流式管道策略组
      */
-    default ContextApi<T> addStrategy(StrategyApi strategy) {
-        // TODO
+    default ContextApi<T> addStrategy(StrategyApi<T> strategy) {
         return this;
     }
 }
