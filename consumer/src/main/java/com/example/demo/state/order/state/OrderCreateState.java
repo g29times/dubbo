@@ -20,11 +20,11 @@ import com.example.demo.state.order.OWFContext;
  * @see Object
  * @since 1.0
  */
-public class OrderCreateState extends OrderStateAbstract {
+public class OrderCreateState implements OrderState {
 
     private int value = 1;
 
-    private final OWFContext context;
+    private OWFContext context;
 
     public OrderCreateState(ContextApi<Order> context) {
         this.context = (OWFContext) context;
@@ -49,12 +49,6 @@ public class OrderCreateState extends OrderStateAbstract {
     @Override
     public String toString() {
         return getStateValue() + "";
-    }
-
-    @Override
-    public void update(Order order) {
-        this.context.setState(this);
-        super.update(order);
     }
 
 }

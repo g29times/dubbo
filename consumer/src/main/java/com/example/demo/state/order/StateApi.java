@@ -35,24 +35,4 @@ public interface StateApi<T> {
      */
     ContextApi<T> getContext();
 
-    // TODO 需配置化
-    /**
-     * 更新状态
-     */
-    void update(T t);
-
-    /**
-     * 逆向状态（退款）
-     */
-    void reverse(T t);
-
-    /**
-     * 下发
-     */
-    void inform(T t);
-
-    /**
-     * 操作日志（快照）
-     */
-    void log(T t);
 }

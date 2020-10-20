@@ -2,6 +2,7 @@ package com.example.demo.state.order;
 
 /**
  * 业务主体上下文
+ * @see org.apache.dubbo.rpc.RpcContext
  */
 public interface ContextApi<T> {
 
@@ -11,7 +12,7 @@ public interface ContextApi<T> {
     }
 
     default ContextApi<T> fork(StrategyApi<T> strategyApi) {
-        strategyApi.requestStrategy(getDomain());
+        strategyApi.process(getDomain());
         return this;
     }
 
@@ -19,11 +20,8 @@ public interface ContextApi<T> {
         return getDomain();
     }
 
+    @Deprecated
     void request(T domain);
-
-
-
-
 
     /**
      * 获取实体

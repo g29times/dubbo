@@ -20,7 +20,7 @@ public class Order {
 
     private Long id;
 
-    private StateApi<Order> state;
+    private int state;
 
     @Override
     public String toString() {
@@ -38,11 +38,11 @@ public class Order {
         this.id = id;
     }
 
-    public StateApi<Order> getState() {
+    public int getState() {
         return state;
     }
 
-    public void setState(StateApi<Order> state) {
+    public void setState(int state) {
         this.state = state;
     }
 }

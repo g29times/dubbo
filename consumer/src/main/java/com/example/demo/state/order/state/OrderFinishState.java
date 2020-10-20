@@ -20,11 +20,11 @@ import com.example.demo.state.order.OWFContext;
  * @see Object
  * @since 1.0
  */
-public class OrderFinishState extends OrderStateAbstract {
+public class OrderFinishState implements OrderState {
 
     private int value = 2;
 
-    private final OWFContext context;
+    private OWFContext context;
 
     public OrderFinishState(ContextApi<Order> context) {
         this.context = (OWFContext) context;

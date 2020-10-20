@@ -142,7 +142,7 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-            <version>${spring-cloud.version}</version>
+            <version>2.2.1.RELEASE</version>
         </dependency>
 
         <!--log-->
@@ -193,6 +193,13 @@
                     <artifactId>json-path</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <!--util-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>transmittable-thread-local</artifactId>
+            <version>2.11.5</version>
         </dependency>
     </dependencies>
 
