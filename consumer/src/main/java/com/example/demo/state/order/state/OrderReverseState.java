@@ -2,7 +2,7 @@ package com.example.demo.state.order.state;
 
 import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.Order;
-import com.example.demo.state.order.OrderWorkFlow;
+import com.example.demo.state.order.OWFContext;
 
 /**
  * . _________         .__   _____   __
@@ -24,20 +24,20 @@ public class OrderReverseState extends OrderStateAbstract {
 
     private int value = 3;
 
-    private final OrderWorkFlow context;
+    private final OWFContext context;
 
     public OrderReverseState(ContextApi<Order> context) {
-        this.context = (OrderWorkFlow) context;
+        this.context = (OWFContext) context;
         this.context.setState(this);
     }
 
     @Override
-    public int getState() {
+    public int getStateValue() {
         return value;
     }
 
     @Override
-    public void setState(int state) {
+    public void setStateValue(int state) {
         this.value = state;
     }
 
@@ -48,7 +48,7 @@ public class OrderReverseState extends OrderStateAbstract {
 
     @Override
     public String toString() {
-        return getState() + "";
+        return getStateValue() + "";
     }
 
 }

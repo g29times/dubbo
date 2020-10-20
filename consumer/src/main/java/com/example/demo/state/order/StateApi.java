@@ -19,19 +19,23 @@ package com.example.demo.state.order;
 public interface StateApi<T> {
 
     /**
-     * 获取上下文
-     */
-    ContextApi<T> getContext();
-
-    /**
      * 获取当前状态
      *
      * @return 1 Create 2 Finish 3 Return
      */
-    int getState();
+    int getStateValue();
 
-    void setState(int state);
+    /**
+     * 设置状态
+     */
+    void setStateValue(int value);
 
+    /**
+     * 获取上下文
+     */
+    ContextApi<T> getContext();
+
+    // TODO 需配置化
     /**
      * 更新状态
      */

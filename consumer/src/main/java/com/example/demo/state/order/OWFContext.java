@@ -20,12 +20,9 @@ import com.example.demo.state.order.state.OrderReverseState;
  * @see Object
  * @since 1.0
  */
-public class OrderWorkFlow implements ContextApi<Order> {
+public class OWFContext implements ContextApi<Order> {
 
-    @Override
-    public String toString() {
-        return "OrderWorkFlow";
-    }
+    private Order domain;
 
     /**
      * 定义出所有状态
@@ -34,7 +31,7 @@ public class OrderWorkFlow implements ContextApi<Order> {
     private final StateApi<Order> finishState;
     private final StateApi<Order> reverseState;
 
-    public OrderWorkFlow() {
+    public OWFContext() {
         this.createState = new OrderCreateState(this);
         this.finishState = new OrderFinishState(this);
         this.reverseState = new OrderReverseState(this);
@@ -63,20 +60,41 @@ public class OrderWorkFlow implements ContextApi<Order> {
     private StrategyApi<Order> strategy;
 
     @Override
+    public Order getDomain() {
+        return domain;
+    }
+
+    @Override
+    public ContextApi<Order> setDomain(Order domain) {
+        this.domain = domain;
+        return this;
+    }
+
+    @Override
     public StateApi<Order> getState() {
         return state;
     }
 
     @Override
-    public void setState(StateApi<Order> state) {
+    public ContextApi<Order> setState(StateApi<Order> state) {
         this.state = state;
+        return this;
+    }
+
+    @Override
+    public StrategyApi<Order> getStrategy() {
+        return strategy;
     }
 
     @Override
     public ContextApi<Order> setStrategy(StrategyApi<Order> strategy) {
         this.strategy = strategy;
-        System.out.println(strategy);
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "OrderWorkFlow";
     }
 
     /**
@@ -90,6 +108,6 @@ public class OrderWorkFlow implements ContextApi<Order> {
 //        state.reverse(order);
 //        state.log(order);
         // 再次转调strategy来处理 策略模式 - 行为可配置
-        strategy.request(order);
+        strategy.requestStrategy(order);
     }
 }

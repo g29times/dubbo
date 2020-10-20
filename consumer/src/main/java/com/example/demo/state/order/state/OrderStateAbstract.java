@@ -26,7 +26,7 @@ public abstract class OrderStateAbstract implements StateApi<Order> {
      */
     @Override
     public void update(Order t) {
-        System.out.println(getContext() + "_" + t + "更新订单：" + getState());
+        System.out.println(getContext() + "_" + t + "更新订单：" + getStateValue());
         t.setState(getContext().getState());
     }
 
@@ -35,7 +35,7 @@ public abstract class OrderStateAbstract implements StateApi<Order> {
      */
     @Override
     public void reverse(Order t) {
-        System.out.println(getContext() + "_" + t + "逆向订单：" + getState());
+        System.out.println(getContext() + "_" + t + "逆向订单：" + getStateValue());
         t.setState(getContext().getState());
     }
 
@@ -44,7 +44,7 @@ public abstract class OrderStateAbstract implements StateApi<Order> {
      */
     @Override
     public void inform(Order t) {
-        System.out.println(getContext() + "_" + t + "订单下发：" + getState());
+        System.out.println(getContext() + "_" + t + "订单下发：" + getStateValue());
     }
 
     /**
@@ -52,6 +52,6 @@ public abstract class OrderStateAbstract implements StateApi<Order> {
      */
     @Override
     public void log(Order t) {
-        System.out.println(getContext() + "_" + t + "操作日志：" + getState());
+        System.out.println(getContext() + "_" + t + "操作日志：" + getStateValue());
     }
 }

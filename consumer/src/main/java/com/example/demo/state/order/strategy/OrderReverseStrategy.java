@@ -1,7 +1,6 @@
 package com.example.demo.state.order.strategy;
 
 import com.example.demo.state.order.*;
-import org.aspectj.weaver.ast.Or;
 
 /**
  * . _________         .__   _____   __
@@ -21,15 +20,16 @@ import org.aspectj.weaver.ast.Or;
  */
 public class OrderReverseStrategy implements StrategyApi<Order> {
 
-    private final OrderWorkFlow context;
+    private final OWFContext context;
 
     public OrderReverseStrategy(ContextApi<Order> context) {
-        this.context = (OrderWorkFlow) context;
+        this.context = (OWFContext) context;
     }
 
     @Override
-    public void request(Order order) {
+    public void requestStrategy(Order order) {
         StateApi<Order> state = context.getReverseState();
+        // TODO 需配置化
         state.reverse(order);
         state.inform(order);
         state.log(order);

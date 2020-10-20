@@ -4,10 +4,36 @@ package com.example.demo.state.order;
  * 业务主体上下文
  */
 public interface ContextApi<T> {
-    /**
-     * 执行任务
-     */
+
+    default ContextApi<T> of(T domain) {
+        setDomain(domain);
+        return this;
+    }
+
+    default ContextApi<T> fork(StrategyApi<T> strategyApi) {
+        strategyApi.requestStrategy(getDomain());
+        return this;
+    }
+
+    default T get() {
+        return getDomain();
+    }
+
     void request(T domain);
+
+
+
+
+
+    /**
+     * 获取实体
+     */
+    T getDomain();
+
+    /**
+     * 设置实体
+     */
+    ContextApi<T> setDomain(T domain);
 
     /**
      * 获取状态
@@ -17,17 +43,16 @@ public interface ContextApi<T> {
     /**
      * 设定状态
      */
-    void setState(StateApi<T> state);
+    ContextApi<T> setState(StateApi<T> state);
+
+    /**
+     * 查询策略
+     */
+    StrategyApi<T> getStrategy();
 
     /**
      * 设定固定策略
      */
     ContextApi<T> setStrategy(StrategyApi<T> strategy);
 
-    /**
-     * TODO 添加策略到流式管道策略组
-     */
-    default ContextApi<T> addStrategy(StrategyApi<T> strategy) {
-        return this;
-    }
 }

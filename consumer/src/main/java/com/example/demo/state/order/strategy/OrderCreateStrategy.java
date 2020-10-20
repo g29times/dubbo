@@ -20,32 +20,41 @@ import com.example.demo.state.order.*;
  */
 public class OrderCreateStrategy implements StrategyApi<Order> {
 
-    private OrderWorkFlow context;
+    private OWFContext context;
 
     public OrderCreateStrategy(ContextApi<Order> context) {
-        this.context = (OrderWorkFlow) context;
-    }
-
-    public OrderCreateStrategy() {
-    }
-
-    public OrderCreateStrategy(Order order) {
-        System.out.println(order);
-    }
-
-    public static OrderCreateStrategy getInstance() {
-        return new OrderCreateStrategy();
-    }
-
-    public static void getInstance(Order order) {
-        System.out.println(order);
+        this.context = (OWFContext) context;
     }
 
     @Override
-    public void request(Order order) {
+    public void requestStrategy(Order order) {
         StateApi<Order> state = context.getCreateState();
+        // TODO 需配置化
         state.update(order);
         state.inform(order);
         state.log(order);
     }
+
+
+
+
+
+    private OrderCreateStrategy() {
+    }
+
+    private static final OrderCreateStrategy STRATEGY = new OrderCreateStrategy();
+
+    public static OrderCreateStrategy getInstance() {
+        return STRATEGY;
+    }
+
+    public static void process(Order order) {
+        System.out.println(order);
+        // TODO 需配置化
+//        order.setState();
+//        state.update(order);
+//        state.inform(order);
+//        state.log(order);
+    }
+
 }
