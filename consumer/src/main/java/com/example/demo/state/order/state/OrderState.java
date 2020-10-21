@@ -1,7 +1,7 @@
 package com.example.demo.state.order.state;
 
-import com.example.demo.state.order.Order;
 import com.example.demo.state.order.StateApi;
+import com.example.demo.state.order.domain.Order;
 
 /**
  * . _________         .__   _____   __
@@ -24,35 +24,22 @@ public interface OrderState extends StateApi<Order> {
     /**
      * 更新状态
      */
-//    @Override
-    default void update(Order order) {
-        getContext().setState(this);
-        System.out.println(getContext() + " - " + order + " 更新订单：" + getStateValue());
-        order.setState(getContext().getState().getStateValue());
-    }
+    void update(Order order);
 
     /**
-     * 逆向状态（退款）
+     * 更新逆向状态
      */
-//    @Override
-    default void reverse(Order order) {
-        System.out.println(getContext() + " - " + order + " 逆向订单：" + getStateValue());
-        order.setState(getContext().getState().getStateValue());
-    }
+    void reverse(Order order);
 
     /**
      * 下发
      */
-//    @Override
-    default void inform(Order order) {
-        System.out.println(getContext() + " - " + order + " 订单下发：" + getStateValue());
-    }
+    void next(Order order);
 
     /**
      * 操作日志（快照）
      */
-//    @Override
     default void log(Order order) {
-        System.out.println(getContext() + " - " + order + " 操作日志：" + getStateValue());
+        System.out.println(getContext() + " - " + order + " 操作日志已记录。"/* + getStateValue()*/);
     }
 }

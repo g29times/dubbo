@@ -16,18 +16,18 @@ import com.example.demo.state.order.domain.Order;
  * <a href="www.google.com">google</a>
  *
  * @author li tong
- * @description: 创建
- * @date 2020/10/14 18:06
+ * @description: 用户已支付订单
+ * @date 2020/10/21 17:18
  * @see Object
  * @since 1.0
  */
-public class OrderCreateState implements OrderState {
+public class PayCreate implements OrderState {
 
-    private int value = 11;
+    private int value = 21;
 
     private OrderContext context;
 
-    public OrderCreateState(ContextApi<Order> context) {
+    public PayCreate(ContextApi<Order> context) {
         this.context = (OrderContext) context;
         this.context.setState(this);
     }
@@ -54,25 +54,19 @@ public class OrderCreateState implements OrderState {
 
     @Override
     public void update(Order order) {
-        getContext().setState(this);
-        System.out.println(getContext() + " - " + order + " -> 更新订单"/* + getStateValue()*/);
-        order.setState(value);
+
     }
 
     @Override
     public void reverse(Order order) {
-        StateApi<Order> reverse = context.getOrderReverse();
-        getContext().setState(reverse);
-        System.out.println(getContext() + " - " + order + " -> 取消订单");
-        order.setState(reverse.getStateValue());
+
     }
 
     @Override
     public void next(Order order) {
-        StateApi<Order> next = context.getPayCreate();
+        StateApi<Order> next = context.getLogisticsCreate();
         getContext().setState(next);
-        System.out.println(getContext() + " - " + order + " -> 订单下发到支付");
+        System.out.println(getContext() + " - " + order + " -> 订单下发到储运");
         order.setState(next.getStateValue());
     }
-
 }

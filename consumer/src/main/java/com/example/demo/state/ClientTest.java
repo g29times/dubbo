@@ -4,7 +4,11 @@ import com.example.demo.state.demo.ConcreteStateA;
 import com.example.demo.state.demo.ConcreteStateB;
 import com.example.demo.state.demo.Context;
 import com.example.demo.state.demo.State;
-import com.example.demo.state.order.*;
+import com.example.demo.state.order.ContextApi;
+import com.example.demo.state.order.StateApi;
+import com.example.demo.state.order.StrategyApi;
+import com.example.demo.state.order.context.OrderContext;
+import com.example.demo.state.order.domain.Order;
 import com.example.demo.state.order.state.OrderCreateState;
 import com.example.demo.state.order.state.OrderReverseState;
 import com.example.demo.state.order.state.OrderState;
@@ -29,83 +33,77 @@ import com.example.demo.state.order.strategy.OrderReverseStrategy;
  */
 public class ClientTest {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 //        demo();
 //        orderV1();
-//		orderV2();
-		orderV3();
-	}
+//        orderV2();
+        orderV3();
+    }
 
-	static class AnyStrategy {
-		public static void process(Order order) {
-			// TODO 需配置化
-			OWFContext context = OWFContext.getContext();
-			OrderState create = context.getCreateState();
-			create.update(order);
+    private static class OrderStrategy {
+        public static void process(Order order) {
+            // TODO 需配置化
+            OrderContext context = OrderContext.getContext();
+            OrderState create = context.getOrderCreate();
+            create.update(order);
 //        db.insert(order);
-			create.inform(order);
-			create.log(order);
-			System.out.println();
-		}
-	}
+            create.next(order);
+            create.log(order);
+            System.out.println();
+        }
+    }
 
-	private static void orderV3() {
-		ContextApi<Order> orderFlow = new OWFContext();
-		Order order = new Order();
-		order.setId(1234L);
-        // order.create() | orderService.create(order);
-        order = orderFlow.of(order).fork(AnyStrategy::process).fork(AnyStrategy::process).get();
-        System.out.println(order);
+    private static void orderV3() {
+        OrderContext/*ContextApi<Order>*/ orderFlow = new OrderContext();
+        Order order = new Order();
+        order.setId(1234L);
+        // of(order) | order.create() | orderService.create(order);
+//        order = orderFlow.of(order).fork(OrderStrategy::process).fork(OrderStrategy::process).get();
+        order = orderFlow.of(order).fork(orderFlow::next).fork(orderFlow::next).get();
+        order = orderFlow.of(order).fork(orderFlow::reverse).fork(orderFlow::next).get();
+        System.out.println("TEST: " + order);
+    }
 
-		orderFlow = null; // GC
-		System.gc();
-		try {
-			Thread.sleep(1000L);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
+    private static void orderV2() {
+        ContextApi<Order> orderFlow = new OrderContext();
+        Order order = new Order();
+        order.setId(1234L);
+        orderFlow.setStrategy(new OrderCreateStrategy(orderFlow)).request(order);
+        orderFlow.setStrategy(new OrderReverseStrategy(orderFlow)).request(order);
+    }
 
-	private static void orderV2() {
-		ContextApi<Order> orderFlow = new OWFContext();
-		Order order = new Order();
-		order.setId(1234L);
-		orderFlow.setStrategy(new OrderCreateStrategy(orderFlow)).request(order);
-		orderFlow.setStrategy(new OrderReverseStrategy(orderFlow)).request(order);
-	}
+    private static void orderV1() {
+        ContextApi<Order> orderFlow = new OrderContext();
+        Order order = new Order();
 
-	private static void orderV1() {
-		ContextApi<Order> orderFlow = new OWFContext();
-		Order order = new Order();
+        StateApi<Order> create = new OrderCreateState(orderFlow);
+        orderFlow.setState(create);
+        StrategyApi<Order> createStrategy = new OrderCreateStrategy(orderFlow);
+        orderFlow.setStrategy(createStrategy);
+        orderFlow.request(order);
+        System.out.println();
 
-		StateApi<Order> create = new OrderCreateState(orderFlow);
-		orderFlow.setState(create);
-		StrategyApi<Order> createStrategy = new OrderCreateStrategy(orderFlow);
-		orderFlow.setStrategy(createStrategy);
-		orderFlow.request(order);
-		System.out.println();
+        StateApi<Order> reverse = new OrderReverseState(orderFlow);
+        orderFlow.setState(reverse);
+        StrategyApi<Order> reverseStrategy = new OrderReverseStrategy(orderFlow);
+        orderFlow.setStrategy(reverseStrategy);
+        orderFlow.request(order);
+    }
 
-		StateApi<Order> reverse = new OrderReverseState(orderFlow);
-		orderFlow.setState(reverse);
-		StrategyApi<Order> reverseStrategy = new OrderReverseStrategy(orderFlow);
-		orderFlow.setStrategy(reverseStrategy);
-		orderFlow.request(order);
-	}
-
-	private static void demo() {
-		//创建环境
-		Context context = new Context();
-		//创建状态
-		State stateA = new ConcreteStateA();
-		//将状态设置到环境中
-		context.setState(stateA);
-		//请求
-		context.request("common flow");
-		//创建状态
-		State stateB = new ConcreteStateB();
-		//将状态设置到环境中
-		context.setState(stateB);
-		//请求
-		context.request("common flow");
-	}
+    private static void demo() {
+        //创建环境
+        Context context = new Context();
+        //创建状态
+        State stateA = new ConcreteStateA();
+        //将状态设置到环境中
+        context.setState(stateA);
+        //请求
+        context.request("common flow");
+        //创建状态
+        State stateB = new ConcreteStateB();
+        //将状态设置到环境中
+        context.setState(stateB);
+        //请求
+        context.request("common flow");
+    }
 }

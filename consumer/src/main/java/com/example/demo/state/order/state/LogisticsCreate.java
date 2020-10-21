@@ -1,7 +1,6 @@
 package com.example.demo.state.order.state;
 
 import com.example.demo.state.order.ContextApi;
-import com.example.demo.state.order.StateApi;
 import com.example.demo.state.order.context.OrderContext;
 import com.example.demo.state.order.domain.Order;
 
@@ -16,18 +15,18 @@ import com.example.demo.state.order.domain.Order;
  * <a href="www.google.com">google</a>
  *
  * @author li tong
- * @description: 创建
- * @date 2020/10/14 18:06
+ * @description: 储运已接单
+ * @date 2020/10/21 17:19
  * @see Object
  * @since 1.0
  */
-public class OrderCreateState implements OrderState {
+public class LogisticsCreate implements OrderState {
 
-    private int value = 11;
+    private int value = 31;
 
     private OrderContext context;
 
-    public OrderCreateState(ContextApi<Order> context) {
+    public LogisticsCreate(ContextApi<Order> context) {
         this.context = (OrderContext) context;
         this.context.setState(this);
     }
@@ -48,31 +47,17 @@ public class OrderCreateState implements OrderState {
     }
 
     @Override
-    public String toString() {
-        return getStateValue() + "";
-    }
-
-    @Override
     public void update(Order order) {
-        getContext().setState(this);
-        System.out.println(getContext() + " - " + order + " -> 更新订单"/* + getStateValue()*/);
-        order.setState(value);
+
     }
 
     @Override
     public void reverse(Order order) {
-        StateApi<Order> reverse = context.getOrderReverse();
-        getContext().setState(reverse);
-        System.out.println(getContext() + " - " + order + " -> 取消订单");
-        order.setState(reverse.getStateValue());
+        System.out.println("输运拦截");
     }
 
     @Override
     public void next(Order order) {
-        StateApi<Order> next = context.getPayCreate();
-        getContext().setState(next);
-        System.out.println(getContext() + " - " + order + " -> 订单下发到支付");
-        order.setState(next.getStateValue());
+        System.out.println("已送达");
     }
-
 }

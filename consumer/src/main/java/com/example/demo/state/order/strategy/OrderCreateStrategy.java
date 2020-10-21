@@ -1,8 +1,8 @@
 package com.example.demo.state.order.strategy;
 
 import com.example.demo.state.order.ContextApi;
-import com.example.demo.state.order.OWFContext;
-import com.example.demo.state.order.Order;
+import com.example.demo.state.order.context.OrderContext;
+import com.example.demo.state.order.domain.Order;
 import com.example.demo.state.order.StrategyApi;
 import com.example.demo.state.order.state.OrderState;
 
@@ -24,18 +24,18 @@ import com.example.demo.state.order.state.OrderState;
  */
 public class OrderCreateStrategy implements StrategyApi<Order> {
 
-	private OWFContext context;
+	private OrderContext context;
 
 	public OrderCreateStrategy(ContextApi<Order> context) {
-		this.context = (OWFContext) context;
+		this.context = (OrderContext) context;
 	}
 
 	@Override
 	public void process(Order order) {
-		OrderState state = context.getCreateState();
+		OrderState state = context.getOrderCreate();
 		// TODO 需配置化
 		state.update(order);
-		state.inform(order);
+		state.next(order);
 		state.log(order);
 	}
 

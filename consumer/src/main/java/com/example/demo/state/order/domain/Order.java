@@ -1,4 +1,4 @@
-package com.example.demo.state.order;
+package com.example.demo.state.order.domain;
 
 /**
  * . _________         .__   _____   __

@@ -1,8 +1,8 @@
 package com.example.demo.state.order.state;
 
 import com.example.demo.state.order.ContextApi;
-import com.example.demo.state.order.Order;
-import com.example.demo.state.order.OWFContext;
+import com.example.demo.state.order.domain.Order;
+import com.example.demo.state.order.context.OrderContext;
 
 /**
  * . _________         .__   _____   __
@@ -22,12 +22,12 @@ import com.example.demo.state.order.OWFContext;
  */
 public class OrderFinishState implements OrderState {
 
-    private int value = 2;
+    private int value = 13;
 
-    private OWFContext context;
+    private OrderContext context;
 
     public OrderFinishState(ContextApi<Order> context) {
-        this.context = (OWFContext) context;
+        this.context = (OrderContext) context;
         this.context.setState(this);
     }
 
@@ -51,4 +51,18 @@ public class OrderFinishState implements OrderState {
         return getStateValue() + "";
     }
 
+    @Override
+    public void update(Order order) {
+
+    }
+
+    @Override
+    public void reverse(Order order) {
+
+    }
+
+    @Override
+    public void next(Order order) {
+
+    }
 }

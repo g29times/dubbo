@@ -1,8 +1,8 @@
 package com.example.demo.state.order.state;
 
 import com.example.demo.state.order.ContextApi;
-import com.example.demo.state.order.Order;
-import com.example.demo.state.order.OWFContext;
+import com.example.demo.state.order.domain.Order;
+import com.example.demo.state.order.context.OrderContext;
 
 /**
  * . _________         .__   _____   __
@@ -15,19 +15,19 @@ import com.example.demo.state.order.OWFContext;
  * <a href="www.google.com">google</a>
  *
  * @author li tong
- * @description: 退款单
+ * @description: 退款
  * @date 2020/10/14 18:09
  * @see Object
  * @since 1.0
  */
 public class OrderReverseState implements OrderState {
 
-    private int value = 3;
+    private int value = 10;
 
-    private OWFContext context;
+    private OrderContext context;
 
     public OrderReverseState(ContextApi<Order> context) {
-        this.context = (OWFContext) context;
+        this.context = (OrderContext) context;
         this.context.setState(this);
     }
 
@@ -51,4 +51,18 @@ public class OrderReverseState implements OrderState {
         return getStateValue() + "";
     }
 
+    @Override
+    public void update(Order order) {
+
+    }
+
+    @Override
+    public void reverse(Order order) {
+
+    }
+
+    @Override
+    public void next(Order order) {
+
+    }
 }

@@ -1,6 +1,8 @@
 package com.example.demo.state.order.strategy;
 
 import com.example.demo.state.order.*;
+import com.example.demo.state.order.context.OrderContext;
+import com.example.demo.state.order.domain.Order;
 import com.example.demo.state.order.state.OrderState;
 
 /**
@@ -21,18 +23,18 @@ import com.example.demo.state.order.state.OrderState;
  */
 public class OrderReverseStrategy implements StrategyApi<Order> {
 
-    private OWFContext context;
+    private OrderContext context;
 
     public OrderReverseStrategy(ContextApi<Order> context) {
-        this.context = (OWFContext) context;
+        this.context = (OrderContext) context;
     }
 
     @Override
     public void process(Order order) {
-        OrderState state = context.getReverseState();
+        OrderState state = context.getOrderReverse();
         // TODO 需配置化
         state.reverse(order);
-        state.inform(order);
+        state.next(order);
         state.log(order);
     }
 }

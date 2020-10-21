@@ -27,11 +27,13 @@ public interface StateApi<T> {
 
     /**
      * 设置状态
+     * @param value 1 Create 2 Finish 3 Return
      */
     void setStateValue(int value);
 
     /**
      * 获取上下文
+     * @return 上下文
      */
     ContextApi<T> getContext();
 
