@@ -71,7 +71,7 @@ public class OrderCreateState implements OrderState {
     public void next(Order order) {
         StateApi<Order> next = context.getPayCreate();
         getContext().setState(next);
-        System.out.println(getContext() + " - " + order + " -> 订单下发到支付");
+        System.out.println("[" + Thread.currentThread().getName() + "] " + getContext() + " - " + order + " -> 订单下发到支付");
         order.setState(next.getStateValue());
     }
 

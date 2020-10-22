@@ -29,7 +29,7 @@ public class OrderContext implements ContextApi<Order> {
 
     private static final TransmittableThreadLocal<SoftReference<OrderContext>> CONTEXT = new TransmittableThreadLocal<>();
 
-    public static OrderContext getContext() {
+    public static OrderContext getOrderContext() {
         return CONTEXT.get().get();
     }
 
@@ -65,7 +65,7 @@ public class OrderContext implements ContextApi<Order> {
         if (domain.getState() < this.orderCreate.getStateValue()) {
             domain.setState(this.orderCreate.getStateValue());
 //        db.insert(domain);
-            System.out.println(getContext() + " - " + "订单已创建 " + domain);
+            System.out.println(getOrderContext() + " - " + "订单已创建 " + domain);
         }
         setDomain(domain);
         return this;
@@ -172,8 +172,9 @@ public class OrderContext implements ContextApi<Order> {
         state.reverse(order);
     }
 
-    @Override
+//    @Override
     public void next(Order order) {
         state.next(order);
     }
+
 }

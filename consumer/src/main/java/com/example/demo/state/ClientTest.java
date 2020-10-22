@@ -7,13 +7,18 @@ import com.example.demo.state.demo.State;
 import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.StateApi;
 import com.example.demo.state.order.StrategyApi;
+import com.example.demo.state.order.concurrent.ProcessorPool;
 import com.example.demo.state.order.context.OrderContext;
 import com.example.demo.state.order.domain.Order;
+import com.example.demo.state.order.domain.OrderDto;
 import com.example.demo.state.order.state.OrderCreateState;
 import com.example.demo.state.order.state.OrderReverseState;
 import com.example.demo.state.order.state.OrderState;
 import com.example.demo.state.order.strategy.OrderCreateStrategy;
 import com.example.demo.state.order.strategy.OrderReverseStrategy;
+
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * . _________         .__   _____   __
@@ -37,20 +42,18 @@ public class ClientTest {
 //        demo();
 //        orderV1();
 //        orderV2();
-        orderV3();
+//        orderV3();
+        orderV4();
     }
 
-    private static class OrderStrategy {
-        public static void process(Order order) {
-            // TODO 需配置化
-            OrderContext context = OrderContext.getContext();
-            OrderState create = context.getOrderCreate();
-            create.update(order);
-//        db.insert(order);
-            create.next(order);
-            create.log(order);
-            System.out.println();
-        }
+    private static void orderV4() {
+        OrderContext/*ContextApi<Order>*/ orderFlow = new OrderContext();
+        Order order = new Order();
+        order.setId(1234L);
+        ProcessorPool.start();
+        // TODO get future
+        order = orderFlow.of(order).fork(orderFlow::next).fork(orderFlow::next).get();
+        System.out.println(order);
     }
 
     private static void orderV3() {
@@ -59,9 +62,22 @@ public class ClientTest {
         order.setId(1234L);
         // of(order) | order.create() | orderService.create(order);
 //        order = orderFlow.of(order).fork(OrderStrategy::process).fork(OrderStrategy::process).get();
-        order = orderFlow.of(order).fork(orderFlow::next).fork(orderFlow::next).get();
-        order = orderFlow.of(order).fork(orderFlow::reverse).fork(orderFlow::next).get();
-        System.out.println("TEST: " + order);
+        order = orderFlow.of(order).push(orderFlow::next).push(orderFlow::next).get();
+        System.out.println(order);
+//        OrderDto dto = orderFlow.of(order).push(orderFlow::reverse).push(orderFlow::next).map(OrderDto::new).get();
+//        System.out.println("TEST: " + dto);
+    }
+    private static class OrderStrategy {
+        public static void process(Order order) {
+            // TODO 需配置化
+            OrderContext context = OrderContext.getOrderContext();
+            OrderState create = context.getOrderCreate();
+            create.update(order);
+//        db.insert(order);
+            create.next(order);
+            create.log(order);
+            System.out.println();
+        }
     }
 
     private static void orderV2() {

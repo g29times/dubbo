@@ -3,6 +3,7 @@ package com.example.demo.state.order;
 /**
  * TODO 实现类考虑单例
  *
+ * @see Runnable
  * @param <T>
  */
 @FunctionalInterface

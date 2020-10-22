@@ -1,5 +1,10 @@
 package com.example.demo.state.order;
 
+import com.example.demo.state.order.concurrent.RequestQueues;
+import com.example.demo.state.order.domain.Transformer;
+
+import java.util.concurrent.BlockingQueue;
+
 /**
  * 业务主体上下文
  *
@@ -16,8 +21,7 @@ public interface ContextApi<T> {
      * @return 上下文
      */
     default ContextApi<T> of(T domain) {
-        setDomain(domain);
-        return this;
+        return setDomain(domain);
     }
 
     /**
@@ -27,6 +31,23 @@ public interface ContextApi<T> {
      * @return 上下文
      */
     default ContextApi<T> fork(StrategyApi<T> strategyApi) {
+        RequestQueues requestQueues = RequestQueues.getInstance();
+        BlockingQueue<StrategyApi> queue = requestQueues.getQueue(0);
+        try {
+            queue.put(strategyApi);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+    /**
+     * 推进任务
+     *
+     * @param strategyApi 流程策略
+     * @return 上下文
+     */
+    default ContextApi<T> push(StrategyApi<T> strategyApi) {
         strategyApi.process(getDomain());
         return this;
     }
@@ -38,6 +59,18 @@ public interface ContextApi<T> {
      */
     default T get() {
         return getDomain();
+    }
+
+    /**
+     * 转换实体
+     *
+     * @param transformer 转换器
+     * @param <D>         目标类型
+     * @return 目标类型的上下文
+     */
+    default <D> ContextApi<D> map(Transformer<T, D> transformer) {
+        return new AbstractContext<D>() {
+        }.of(transformer.transform(getDomain()));
     }
 
     // *************************** 业务方法区
@@ -55,7 +88,7 @@ public interface ContextApi<T> {
      *
      * @param domain 实体
      */
-    void next(T domain);
+//    void next(T domain);
 
     // *************************** 基础方法区
 
