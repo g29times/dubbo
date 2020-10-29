@@ -3,6 +3,7 @@ package com.example.demo.state.order.state;
 import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.context.OrderContext;
 import com.example.demo.state.order.domain.Order;
+import com.example.demo.state.order.processor.AbstractProcessor;
 
 /**
  * . _________         .__   _____   __
@@ -20,7 +21,7 @@ import com.example.demo.state.order.domain.Order;
  * @see Object
  * @since 1.0
  */
-public class LogisticsCreate implements OrderState {
+public class LogisticsCreate extends AbstractProcessor<Order> implements OrderState {
 
     private int value = 31;
 
@@ -29,6 +30,10 @@ public class LogisticsCreate implements OrderState {
     public LogisticsCreate(ContextApi<Order> context) {
         this.context = (OrderContext) context;
         this.context.setState(this);
+    }
+
+    public LogisticsCreate() {
+
     }
 
     @Override
@@ -43,12 +48,14 @@ public class LogisticsCreate implements OrderState {
 
     @Override
     public ContextApi<Order> getContext() {
-        return context;
+        return OrderContext.getOrderContext();
     }
 
     @Override
     public void update(Order order) {
-
+        getContext().setState(this);
+        System.out.println(getContext() + " - " + order + " -> 创建储运单");
+        order.setState(value);
     }
 
     @Override
@@ -59,5 +66,10 @@ public class LogisticsCreate implements OrderState {
     @Override
     public void next(Order order) {
         System.out.println("已送达");
+    }
+
+    @Override
+    public void process(Order order) {
+        update(order);
     }
 }

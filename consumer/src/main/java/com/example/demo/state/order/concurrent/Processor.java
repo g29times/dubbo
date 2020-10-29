@@ -3,8 +3,8 @@ package com.example.demo.state.order.concurrent;
 import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.StrategyApi;
 import com.example.demo.state.order.context.OrderContext;
-import com.example.demo.state.order.domain.Order;
 
+import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 
@@ -24,12 +24,15 @@ import java.util.concurrent.Callable;
  * @see Object
  * @since 1.0
  */
-public class Processor implements Callable<Boolean> {
+public class Processor<T> implements Callable<Boolean> {
 
-    private final BlockingQueue<StrategyApi> queue;
+    private final BlockingQueue<StrategyApi<T>> queue;
 
-    public Processor(BlockingQueue<StrategyApi> queue) {
+    private final ContextApi<T> context;
+
+    public Processor(BlockingQueue<StrategyApi<T>> queue, ContextApi<T> context) {
         this.queue = queue;
+        this.context = context;
     }
 
     @Override
@@ -37,10 +40,12 @@ public class Processor implements Callable<Boolean> {
         System.out.println("Thread " + Thread.currentThread().getName() + " is running");
         try {
             while (true) {
-                StrategyApi<Order> request = queue.take();
-                request.process(OrderContext.getOrderContext().getDomain());
+                StrategyApi request = queue.take();
+//                System.out.println(context.getDomain());
+                request.process(/*context.getDomain()*/
+                        OrderContext.getOrderContext().getDomain());
             }
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return true;

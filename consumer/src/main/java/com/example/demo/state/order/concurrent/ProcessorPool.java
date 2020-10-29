@@ -1,7 +1,10 @@
 package com.example.demo.state.order.concurrent;
 
+import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.StrategyApi;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
+import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -21,27 +24,44 @@ import java.util.concurrent.atomic.LongAdder;
  * @see Object
  * @since 1.0
  */
-public class ProcessorPool {
-
-    private static final ExecutorService pool = Executors.newWorkStealingPool();
+public class ProcessorPool<T> {
 
     private static final long CHECK_FINISH_INTERVAL = 1000L;
 
-    private ProcessorPool() {
-        RequestQueues queues = RequestQueues.getInstance();
+    private final ExecutorService pool = Executors.newWorkStealingPool();
+
+    private ContextApi<T> context;
+
+    public ProcessorPool() {
+        RequestQueues<T> queues = RequestQueues.getInstance();
+        // 2个队列 2个线程 TODO i=2 i=?
         for (int i = 0; i < 2; i++) {
-            BlockingQueue<StrategyApi> queue = new ArrayBlockingQueue<>(100);
-            Processor thread = new Processor(queue);
+            BlockingQueue<StrategyApi<T>> queue = new ArrayBlockingQueue<>(100);
+            Processor<T> thread = new Processor(queue, context);
             queues.addQueue(queue);
             pool.submit(thread);
+//            futures.add(pool.submit(thread));
         }
     }
 
-    public static void start() {
+    private static Set<Future<Boolean>> futures;
+
+    public static Boolean get() {
+        try {
+//            futures.forEach(future -> future.get());
+//            return future.get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static void start(/*ContextApi context*/) {
+//        this.context = context;
         System.out.println("POOL STARTED " + getInstance());
     }
 
-    public static void stop() {
+    public void stop() {
         shutdownPool(pool, "ProcessorPool");
     }
 

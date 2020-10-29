@@ -29,20 +29,8 @@ public class OrderContext implements ContextApi<Order> {
 
     private static final TransmittableThreadLocal<SoftReference<OrderContext>> CONTEXT = new TransmittableThreadLocal<>();
 
-    public static OrderContext getOrderContext() {
-        return CONTEXT.get().get();
-    }
-
-    public static void restoreContext(OrderContext oldContext) {
-        CONTEXT.set(new SoftReference<>(oldContext));
-    }
-
-    public static void removeContext() {
-        System.out.println("removeContext");
-        CONTEXT.remove();
-    }
-
     public OrderContext() {
+        // 初始化上下文
         System.out.println(" --- OrderContext is created --- ");
         SoftReference<OrderContext> sf = new SoftReference<>(this);
         CONTEXT.set(sf);
@@ -56,9 +44,20 @@ public class OrderContext implements ContextApi<Order> {
         initState();
     }
 
-    private void initState() {
-        this.state = this.orderCreate;
+    public static OrderContext getOrderContext() {
+        return CONTEXT.get().get();
     }
+
+    public static void restoreContext(OrderContext oldContext) {
+        CONTEXT.set(new SoftReference<>(oldContext));
+    }
+
+    public static void removeContext() {
+        System.out.println("removeContext");
+        CONTEXT.remove();
+    }
+
+    private Order domain;
 
     @Override
     public ContextApi<Order> of(Order domain) {
@@ -71,12 +70,14 @@ public class OrderContext implements ContextApi<Order> {
         return this;
     }
 
-    private Order domain;
-
     /**
      * 持有一个State类型的对象实例
      */
     private OrderState state;
+
+    private void initState() {
+        this.state = this.orderCreate;
+    }
 
     /**
      * 定义出所有状态
@@ -91,6 +92,8 @@ public class OrderContext implements ContextApi<Order> {
      * 持有一个Strategy类型的对象实例
      */
     private StrategyApi<Order> strategy;
+
+    // *************************** 基础方法区
 
     public OrderState getOrderCreate() {
         return orderCreate;
@@ -149,6 +152,8 @@ public class OrderContext implements ContextApi<Order> {
     public String toString() {
         return OrderContext.class.getSimpleName();
     }
+
+    // *************************** 业务方法区
 
     /**
      * 订单流程编排

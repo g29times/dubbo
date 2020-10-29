@@ -4,6 +4,7 @@ import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.StateApi;
 import com.example.demo.state.order.context.OrderContext;
 import com.example.demo.state.order.domain.Order;
+import com.example.demo.state.order.processor.AbstractProcessor;
 
 /**
  * . _________         .__   _____   __
@@ -21,7 +22,7 @@ import com.example.demo.state.order.domain.Order;
  * @see Object
  * @since 1.0
  */
-public class PayCreate implements OrderState {
+public class PayCreate extends AbstractProcessor<Order> implements OrderState {
 
     private int value = 21;
 
@@ -30,6 +31,10 @@ public class PayCreate implements OrderState {
     public PayCreate(ContextApi<Order> context) {
         this.context = (OrderContext) context;
         this.context.setState(this);
+    }
+
+    public PayCreate() {
+
     }
 
     @Override
@@ -44,7 +49,7 @@ public class PayCreate implements OrderState {
 
     @Override
     public ContextApi<Order> getContext() {
-        return context;
+        return OrderContext.getOrderContext();
     }
 
     @Override
@@ -54,7 +59,9 @@ public class PayCreate implements OrderState {
 
     @Override
     public void update(Order order) {
-
+        getContext().setState(this);
+        System.out.println(getContext() + " - " + order + " -> 创建支付单");
+        order.setState(value);
     }
 
     @Override
@@ -69,4 +76,10 @@ public class PayCreate implements OrderState {
         System.out.println("[" + Thread.currentThread().getName() + "] " + getContext() + " - " + order + " -> 订单下发到储运");
         order.setState(next.getStateValue());
     }
+
+    @Override
+    public void process(Order order) {
+        update(order);
+    }
+
 }

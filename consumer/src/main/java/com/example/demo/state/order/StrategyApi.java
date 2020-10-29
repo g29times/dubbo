@@ -14,5 +14,4 @@ public interface StrategyApi<T> {
      * @param t 实体
      */
     void process(T t);
-
 }

@@ -3,10 +3,14 @@ package com.example.demo.state.order.concurrent;
 import com.example.demo.state.order.StrategyApi;
 import com.example.demo.state.order.domain.Order;
 
-public interface Request extends StrategyApi/*<Order>*/ {
+import java.util.function.Supplier;
+
+public interface Request<T> extends StrategyApi<T> {
 
     void process();
 
-    Long getOrderId();
+    void process(Supplier supplier);
+
+    Long getDomainId();
 
 }

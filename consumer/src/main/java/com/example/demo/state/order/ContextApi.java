@@ -9,6 +9,7 @@ import java.util.concurrent.BlockingQueue;
  * 业务主体上下文
  *
  * @see org.apache.dubbo.rpc.RpcContext
+ * @see org.springframework.context.ConfigurableApplicationContext
  */
 public interface ContextApi<T> {
 
@@ -42,6 +43,15 @@ public interface ContextApi<T> {
     }
 
     /**
+     * 查看实体
+     * @return
+     */
+    default ContextApi<T> peek() {
+        fork(System.out::println);
+        return this;
+    }
+
+    /**
      * 推进任务
      *
      * @param strategyApi 流程策略
@@ -50,15 +60,6 @@ public interface ContextApi<T> {
     default ContextApi<T> push(StrategyApi<T> strategyApi) {
         strategyApi.process(getDomain());
         return this;
-    }
-
-    /**
-     * 获取实体
-     *
-     * @return 上下文
-     */
-    default T get() {
-        return getDomain();
     }
 
     /**

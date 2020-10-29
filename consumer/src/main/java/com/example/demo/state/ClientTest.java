@@ -11,14 +11,12 @@ import com.example.demo.state.order.concurrent.ProcessorPool;
 import com.example.demo.state.order.context.OrderContext;
 import com.example.demo.state.order.domain.Order;
 import com.example.demo.state.order.domain.OrderDto;
+import com.example.demo.state.order.processor.OrderProcessorBuilder;
 import com.example.demo.state.order.state.OrderCreateState;
 import com.example.demo.state.order.state.OrderReverseState;
 import com.example.demo.state.order.state.OrderState;
 import com.example.demo.state.order.strategy.OrderCreateStrategy;
 import com.example.demo.state.order.strategy.OrderReverseStrategy;
-
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * . _________         .__   _____   __
@@ -43,29 +41,66 @@ public class ClientTest {
 //        orderV1();
 //        orderV2();
 //        orderV3();
-        orderV4();
+//        orderV4();
+        orderV5();
+    }
+
+    private static void orderV5() {
+        // demo
+//        getSubmitPreProcessorBuilder(bizType).build().invoke(context, ret);
+
+        // order
+        OrderContext orderFlow = new OrderContext();
+        Order order = new Order();
+        order.setId(1234L);
+
+        new OrderProcessorBuilder().initProcessor().build().invoke(order);
+        System.out.println(order);
     }
 
     private static void orderV4() {
         OrderContext/*ContextApi<Order>*/ orderFlow = new OrderContext();
         Order order = new Order();
         order.setId(1234L);
+
+//        ProcessorPool orderPool = ProcessorPool.getInstance();
+//        orderPool.start(orderFlow);
         ProcessorPool.start();
+        order = orderFlow.of(order).fork(orderFlow::next).fork(orderFlow::next).getDomain();
         // TODO get future
-        order = orderFlow.of(order).fork(orderFlow::next).fork(orderFlow::next).get();
-        System.out.println(order);
+//        System.out.println(order);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//
+        orderFlow.peek();
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//        orderPool.stop();
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private static void orderV3() {
         OrderContext/*ContextApi<Order>*/ orderFlow = new OrderContext();
         Order order = new Order();
         order.setId(1234L);
+
         // of(order) | order.create() | orderService.create(order);
-//        order = orderFlow.of(order).fork(OrderStrategy::process).fork(OrderStrategy::process).get();
-        order = orderFlow.of(order).push(orderFlow::next).push(orderFlow::next).get();
+//        order = orderFlow.of(order).push(OrderStrategy::process).push(OrderStrategy::process).get();
+        order = orderFlow.of(order).push(orderFlow::next).push(orderFlow::next).getDomain();
         System.out.println(order);
-//        OrderDto dto = orderFlow.of(order).push(orderFlow::reverse).push(orderFlow::next).map(OrderDto::new).get();
-//        System.out.println("TEST: " + dto);
+        OrderDto dto = orderFlow.of(order).map(OrderDto::new).getDomain();
+        System.out.println("TEST: " + dto);
     }
     private static class OrderStrategy {
         public static void process(Order order) {
