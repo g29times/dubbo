@@ -1,4 +1,4 @@
-package com.example.demo.state;
+package com.example.demo.state.order.client.up;
 
 import com.example.demo.state.demo.ConcreteStateA;
 import com.example.demo.state.demo.ConcreteStateB;
@@ -7,16 +7,16 @@ import com.example.demo.state.demo.State;
 import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.StateApi;
 import com.example.demo.state.order.StrategyApi;
-import com.example.demo.state.order.concurrent.ProcessorPool;
+import com.example.demo.state.order.experiment.concurrent.ProcessorPool;
 import com.example.demo.state.order.context.OrderContext;
 import com.example.demo.state.order.domain.Order;
 import com.example.demo.state.order.domain.OrderDto;
-import com.example.demo.state.order.processor.OrderProcessorBuilder;
+import com.example.demo.state.order.experiment.processor.OrderProcessorBuilder;
 import com.example.demo.state.order.state.OrderCreateState;
-import com.example.demo.state.order.state.OrderReverseState;
+import com.example.demo.state.order.state.OrderCancelState;
 import com.example.demo.state.order.state.OrderState;
-import com.example.demo.state.order.strategy.OrderCreateStrategy;
-import com.example.demo.state.order.strategy.OrderReverseStrategy;
+import com.example.demo.state.order.experiment.strategy.OrderCreateStrategy;
+import com.example.demo.state.order.experiment.strategy.OrderCancelStrategy;
 
 /**
  * . _________         .__   _____   __
@@ -38,11 +38,13 @@ public class ClientTest {
 
     public static void main(String[] args) {
 //        demo();
+
 //        orderV1();
 //        orderV2();
+
 //        orderV3();
-//        orderV4();
-        orderV5();
+        orderV4();
+//        orderV5();
     }
 
     private static void orderV5() {
@@ -59,46 +61,30 @@ public class ClientTest {
     }
 
     private static void orderV4() {
-        OrderContext/*ContextApi<Order>*/ orderFlow = new OrderContext();
+        OrderContext orderFlow = new OrderContext();
         Order order = new Order();
         order.setId(1234L);
 
-//        ProcessorPool orderPool = ProcessorPool.getInstance();
-//        orderPool.start(orderFlow);
         ProcessorPool.start();
-        order = orderFlow.of(order).fork(orderFlow::next).fork(orderFlow::next).getDomain();
-        // TODO get future
-//        System.out.println(order);
+        orderFlow.of(order).next().fork(orderFlow::next).getDomain();
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000L);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-//
         orderFlow.peek();
-//        try {
-//            Thread.sleep(2000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//
 //        orderPool.stop();
-//        try {
-//            Thread.sleep(2000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
     }
 
     private static void orderV3() {
-        OrderContext/*ContextApi<Order>*/ orderFlow = new OrderContext();
+        OrderContext orderFlow = new OrderContext();
         Order order = new Order();
         order.setId(1234L);
 
         // of(order) | order.create() | orderService.create(order);
 //        order = orderFlow.of(order).push(OrderStrategy::process).push(OrderStrategy::process).get();
         order = orderFlow.of(order).push(orderFlow::next).push(orderFlow::next).getDomain();
-        System.out.println(order);
+        System.out.println("print --- " + order);
         OrderDto dto = orderFlow.of(order).map(OrderDto::new).getDomain();
         System.out.println("TEST: " + dto);
     }
@@ -120,7 +106,7 @@ public class ClientTest {
         Order order = new Order();
         order.setId(1234L);
         orderFlow.setStrategy(new OrderCreateStrategy(orderFlow)).request(order);
-        orderFlow.setStrategy(new OrderReverseStrategy(orderFlow)).request(order);
+        orderFlow.setStrategy(new OrderCancelStrategy(orderFlow)).request(order);
     }
 
     private static void orderV1() {
@@ -134,9 +120,9 @@ public class ClientTest {
         orderFlow.request(order);
         System.out.println();
 
-        StateApi<Order> reverse = new OrderReverseState(orderFlow);
+        StateApi<Order> reverse = new OrderCancelState(orderFlow);
         orderFlow.setState(reverse);
-        StrategyApi<Order> reverseStrategy = new OrderReverseStrategy(orderFlow);
+        StrategyApi<Order> reverseStrategy = new OrderCancelStrategy(orderFlow);
         orderFlow.setStrategy(reverseStrategy);
         orderFlow.request(order);
     }

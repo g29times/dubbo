@@ -4,8 +4,7 @@ import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.StateApi;
 import com.example.demo.state.order.context.OrderContext;
 import com.example.demo.state.order.domain.Order;
-import com.example.demo.state.order.processor.AbstractProcessor;
-import com.example.demo.state.order.processor.Processor;
+import com.example.demo.state.order.experiment.processor.AbstractProcessor;
 
 /**
  * . _________         .__   _____   __
@@ -66,7 +65,7 @@ public class OrderCreateState extends AbstractProcessor<Order> implements OrderS
 
     @Override
     public void reverse(Order order) {
-        StateApi<Order> reverse = context.getOrderReverse();
+        StateApi<Order> reverse = context.getOrderCancel();
         getContext().setState(reverse);
         System.out.println(getContext() + " - " + order + " -> 取消订单");
         order.setState(reverse.getStateValue());
@@ -85,6 +84,9 @@ public class OrderCreateState extends AbstractProcessor<Order> implements OrderS
         order.setState(next.getStateValue());
     }
 
+    /**
+     * 实现预编排
+     */
     @Override
     public void process(Order order) {
         update(order);

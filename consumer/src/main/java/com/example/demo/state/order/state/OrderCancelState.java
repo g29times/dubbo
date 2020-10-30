@@ -20,13 +20,13 @@ import com.example.demo.state.order.context.OrderContext;
  * @see Object
  * @since 1.0
  */
-public class OrderReverseState implements OrderState {
+public class OrderCancelState implements OrderState {
 
     private int value = 10;
 
     private OrderContext context;
 
-    public OrderReverseState(ContextApi<Order> context) {
+    public OrderCancelState(ContextApi<Order> context) {
         this.context = (OrderContext) context;
         this.context.setState(this);
     }

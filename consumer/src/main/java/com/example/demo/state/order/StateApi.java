@@ -1,5 +1,7 @@
 package com.example.demo.state.order;
 
+import com.example.demo.state.order.domain.Order;
+
 /**
  * . _________         .__   _____   __
  * ./   _____/__  _  __|__|_/ ____\_/  |_
@@ -36,5 +38,10 @@ public interface StateApi<T> {
      * @return 上下文
      */
     ContextApi<T> getContext();
+
+    /**
+     * 下推
+     */
+    void next(T domain);
 
 }

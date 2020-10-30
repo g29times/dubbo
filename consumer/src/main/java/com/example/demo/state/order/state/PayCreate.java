@@ -2,9 +2,11 @@ package com.example.demo.state.order.state;
 
 import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.StateApi;
+import com.example.demo.state.order.client.down.PayServiceApi;
 import com.example.demo.state.order.context.OrderContext;
+import com.example.demo.state.order.domain.Bill;
 import com.example.demo.state.order.domain.Order;
-import com.example.demo.state.order.processor.AbstractProcessor;
+import com.example.demo.state.order.experiment.processor.AbstractProcessor;
 
 /**
  * . _________         .__   _____   __
@@ -66,15 +68,28 @@ public class PayCreate extends AbstractProcessor<Order> implements OrderState {
 
     @Override
     public void reverse(Order order) {
-
+        StateApi<Order> prev = context.getOrderCancel();
+        getContext().setState(prev);
+        System.out.println("[" + Thread.currentThread().getName() + "] " + getContext() + " - " + order + " -> 支付取消");
+        order.setState(prev.getStateValue());
     }
 
     @Override
     public void next(Order order) {
-        StateApi<Order> next = context.getLogisticsCreate();
-        getContext().setState(next);
-        System.out.println("[" + Thread.currentThread().getName() + "] " + getContext() + " - " + order + " -> 订单下发到储运");
-        order.setState(next.getStateValue());
+//        StateApi<Order> next = context.getLogisticsCreate();
+//        getContext().setState(next);
+//        System.out.println("[" + Thread.currentThread().getName() + "] " + getContext() + " - " + order + " -> 支付单下发到储运");
+//        order.setState(next.getStateValue());
+
+        // 模拟调用支付系统 状态分支
+        if (new PayServiceApi().addOrUpdate(new Bill())) {
+            StateApi<Order> next = context.getLogisticsCreate();
+            getContext().setState(next);
+            System.out.println("[" + Thread.currentThread().getName() + "] " + getContext() + " - " + order + " -> 支付单下发到储运");
+            order.setState(next.getStateValue());
+        } else {
+            reverse(order);
+        }
     }
 
     @Override

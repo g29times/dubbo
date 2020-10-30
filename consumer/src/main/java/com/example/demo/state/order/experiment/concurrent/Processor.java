@@ -1,4 +1,4 @@
-package com.example.demo.state.order.concurrent;
+package com.example.demo.state.order.experiment.concurrent;
 
 import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.StrategyApi;
@@ -42,10 +42,10 @@ public class Processor<T> implements Callable<Boolean> {
             while (true) {
                 StrategyApi request = queue.take();
 //                System.out.println(context.getDomain());
-                request.process(/*context.getDomain()*/
-                        OrderContext.getOrderContext().getDomain());
+                request.process(OrderContext.getOrderContext().getDomain());
             }
         } catch (Exception e) {
+            // 线程内异常捕获 Future https://blog.csdn.net/zangdaiyang1991/article/details/89228103
             e.printStackTrace();
         }
         return true;

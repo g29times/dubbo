@@ -1,4 +1,4 @@
-package com.example.demo.state.order.strategy;
+package com.example.demo.state.order.experiment.strategy;
 
 import com.example.demo.state.order.*;
 import com.example.demo.state.order.context.OrderContext;
@@ -18,21 +18,20 @@ import com.example.demo.state.order.state.OrderState;
  * @author li tong
  * @description: 退货流程
  * @date 2020/10/14 20:12
- * @see Object
+ * @see AbstractProcessorBuilder
  * @since 1.0
  */
-public class OrderReverseStrategy implements StrategyApi<Order> {
+public class OrderCancelStrategy implements StrategyApi<Order> {
 
     private OrderContext context;
 
-    public OrderReverseStrategy(ContextApi<Order> context) {
+    public OrderCancelStrategy(ContextApi<Order> context) {
         this.context = (OrderContext) context;
     }
 
     @Override
     public void process(Order order) {
-        OrderState state = context.getOrderReverse();
-        // TODO 需配置化
+        OrderState state = context.getOrderCancel();
         state.reverse(order);
         state.next(order);
         state.log(order);

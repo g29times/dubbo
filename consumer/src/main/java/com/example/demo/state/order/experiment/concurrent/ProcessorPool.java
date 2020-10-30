@@ -1,8 +1,7 @@
-package com.example.demo.state.order.concurrent;
+package com.example.demo.state.order.experiment.concurrent;
 
 import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.StrategyApi;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.util.Set;
 import java.util.concurrent.*;
@@ -34,7 +33,7 @@ public class ProcessorPool<T> {
 
     public ProcessorPool() {
         RequestQueues<T> queues = RequestQueues.getInstance();
-        // 2个队列 2个线程 TODO i=2 i=?
+        // 2个队列 2个线程 TODO i=?
         for (int i = 0; i < 2; i++) {
             BlockingQueue<StrategyApi<T>> queue = new ArrayBlockingQueue<>(100);
             Processor<T> thread = new Processor(queue, context);

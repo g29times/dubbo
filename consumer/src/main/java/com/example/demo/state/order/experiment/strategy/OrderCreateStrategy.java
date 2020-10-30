@@ -1,4 +1,4 @@
-package com.example.demo.state.order.strategy;
+package com.example.demo.state.order.experiment.strategy;
 
 import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.context.OrderContext;
@@ -19,7 +19,7 @@ import com.example.demo.state.order.state.OrderState;
  * @author li tong
  * @description: 创建流程
  * @date 2020/10/14 20:12
- * @see Object
+ * @see AbstractProcessorBuilder
  * @since 1.0
  */
 public class OrderCreateStrategy implements StrategyApi<Order> {
@@ -33,7 +33,6 @@ public class OrderCreateStrategy implements StrategyApi<Order> {
 	@Override
 	public void process(Order order) {
 		OrderState state = context.getOrderCreate();
-		// TODO 需配置化
 		state.update(order);
 		state.next(order);
 		state.log(order);

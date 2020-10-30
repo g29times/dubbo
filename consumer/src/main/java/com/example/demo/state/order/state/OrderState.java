@@ -32,11 +32,6 @@ public interface OrderState extends StateApi<Order> {
     void reverse(Order order);
 
     /**
-     * 下发
-     */
-    void next(Order order);
-
-    /**
      * 操作日志（快照）
      */
     default void log(Order order) {

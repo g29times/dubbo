@@ -19,3 +19,10 @@ java状态模式
 并发支持
     借鉴内存队列  
 解决问题：把状态机做成服务器
+
+第五版
+监听支持
+    代理 https://www.jianshu.com/p/c06a686dae39
+    观察者
+        事件 https://blog.csdn.net/weixin_39035120/article/details/86225377
+解决订单-支付状态同步问题

@@ -1,7 +1,7 @@
 package com.example.demo.state.order;
 
-import com.example.demo.state.order.concurrent.RequestQueues;
 import com.example.demo.state.order.domain.Transformer;
+import com.example.demo.state.order.experiment.concurrent.RequestQueues;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -44,10 +44,18 @@ public interface ContextApi<T> {
 
     /**
      * 查看实体
-     * @return
      */
     default ContextApi<T> peek() {
+        System.out.print("peek --- ");
         fork(System.out::println);
+        return this;
+    }
+
+    /**
+     * 继续下一步
+     */
+    default ContextApi<T> next() {
+        fork(getState()::next);
         return this;
     }
 

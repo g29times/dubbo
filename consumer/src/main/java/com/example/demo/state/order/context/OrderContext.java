@@ -4,6 +4,8 @@ import com.alibaba.ttl.TransmittableThreadLocal;
 import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.StateApi;
 import com.example.demo.state.order.StrategyApi;
+import com.example.demo.state.order.client.observer.ApplicationContext;
+import com.example.demo.state.order.client.observer.OrderObserver;
 import com.example.demo.state.order.domain.Order;
 import com.example.demo.state.order.state.*;
 
@@ -37,11 +39,13 @@ public class OrderContext implements ContextApi<Order> {
         // 创建状态集
         this.orderCreate = new OrderCreateState(this);
         this.orderFinish = new OrderFinishState(this);
-        this.orderReverse = new OrderReverseState(this);
+        this.orderCancel = new OrderCancelState(this);
         this.payCreate = new PayCreate(this);
         this.logisticsCreate = new LogisticsCreate(this);
         // 设置初始状态
         initState();
+        // 开始监听
+        OrderObserver.listen();
     }
 
     public static OrderContext getOrderContext() {
@@ -61,7 +65,7 @@ public class OrderContext implements ContextApi<Order> {
 
     @Override
     public ContextApi<Order> of(Order domain) {
-        if (domain.getState() < this.orderCreate.getStateValue()) {
+        if (domain.getState() == 0) {
             domain.setState(this.orderCreate.getStateValue());
 //        db.insert(domain);
             System.out.println(getOrderContext() + " - " + "订单已创建 " + domain);
@@ -84,14 +88,14 @@ public class OrderContext implements ContextApi<Order> {
      */
     private final OrderState orderCreate;
     private final OrderState orderFinish;
-    private final OrderState orderReverse;
+    private final OrderState orderCancel;
     private final OrderState payCreate;
     private final OrderState logisticsCreate;
 
     /**
      * 持有一个Strategy类型的对象实例
      */
-    private StrategyApi<Order> strategy;
+    private StrategyApi strategy;
 
     // *************************** 基础方法区
 
@@ -103,8 +107,8 @@ public class OrderContext implements ContextApi<Order> {
         return orderFinish;
     }
 
-    public OrderState getOrderReverse() {
-        return orderReverse;
+    public OrderState getOrderCancel() {
+        return orderCancel;
     }
 
     public OrderState getPayCreate() {
@@ -121,29 +125,29 @@ public class OrderContext implements ContextApi<Order> {
     }
 
     @Override
-    public ContextApi<Order> setDomain(Order domain) {
+    public ContextApi setDomain(Order domain) {
         this.domain = domain;
         return this;
     }
 
     @Override
-    public StateApi<Order> getState() {
-        return state;
+    public StateApi getState() {
+        return (StateApi) state;
     }
 
     @Override
-    public ContextApi<Order> setState(StateApi<Order> state) {
+    public ContextApi setState(StateApi state) {
         this.state = (OrderState) state;
         return this;
     }
 
     @Override
-    public StrategyApi<Order> getStrategy() {
+    public StrategyApi getStrategy() {
         return strategy;
     }
 
     @Override
-    public ContextApi<Order> setStrategy(StrategyApi<Order> strategy) {
+    public ContextApi setStrategy(StrategyApi strategy) {
         this.strategy = strategy;
         return this;
     }
