@@ -15,7 +15,7 @@ import com.example.demo.state.order.context.OrderContext;
  * <a href="www.google.com">google</a>
  *
  * @author li tong
- * @description: 退款
+ * @description: 取消订单
  * @date 2020/10/14 18:09
  * @see Object
  * @since 1.0
@@ -25,6 +25,9 @@ public class OrderCancelState implements OrderState {
     private int value = 10;
 
     private OrderContext context;
+
+    public OrderCancelState() {
+    }
 
     public OrderCancelState(ContextApi<Order> context) {
         this.context = (OrderContext) context;
@@ -39,11 +42,6 @@ public class OrderCancelState implements OrderState {
     @Override
     public void setStateValue(int state) {
         this.value = state;
-    }
-
-    @Override
-    public ContextApi<Order> getContext() {
-        return context;
     }
 
     @Override

@@ -1,8 +1,6 @@
 package com.example.demo.state.order.state;
 
-import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.StateApi;
-import com.example.demo.state.order.context.OrderContext;
 import com.example.demo.state.order.domain.Order;
 import com.example.demo.state.order.experiment.processor.AbstractProcessor;
 
@@ -17,7 +15,7 @@ import com.example.demo.state.order.experiment.processor.AbstractProcessor;
  * <a href="www.google.com">google</a>
  *
  * @author li tong
- * @description: 创建
+ * @description: 创建订单
  * @date 2020/10/14 18:06
  * @see Object
  * @since 1.0
@@ -26,15 +24,15 @@ public class OrderCreateState extends AbstractProcessor<Order> implements OrderS
 
     private int value = 11;
 
-    private OrderContext context;
+//    private OrderContext context;
 
     public OrderCreateState() {
     }
 
-    public OrderCreateState(ContextApi<Order> context) {
-        this.context = (OrderContext) context;
-        this.context.setState(this);
-    }
+//    public OrderCreateState(ContextApi<Order> context) {
+//        this.context = (OrderContext) context;
+//        this.context.setState(this);
+//    }
 
     @Override
     public int getStateValue() {
@@ -44,11 +42,6 @@ public class OrderCreateState extends AbstractProcessor<Order> implements OrderS
     @Override
     public void setStateValue(int value) {
         this.value = value;
-    }
-
-    @Override
-    public ContextApi<Order> getContext() {
-        return OrderContext.getOrderContext();
     }
 
     @Override
@@ -65,7 +58,7 @@ public class OrderCreateState extends AbstractProcessor<Order> implements OrderS
 
     @Override
     public void reverse(Order order) {
-        StateApi<Order> reverse = context.getOrderCancel();
+        StateApi<Order> reverse = getContext().getOrderCancel();
         getContext().setState(reverse);
         System.out.println(getContext() + " - " + order + " -> 取消订单");
         order.setState(reverse.getStateValue());
@@ -77,9 +70,10 @@ public class OrderCreateState extends AbstractProcessor<Order> implements OrderS
         // V1 写死：context.getPayCreate();
         // V2 查库(或配置)获得：context.getNext();
         // V3 通过服务调用结果判断走哪个分支
-        StateApi<Order> next = context.getPayCreate();
+        StateApi<Order> next = getContext().getPayCreate();
         getContext().setState(next);
-        System.out.println("[" + Thread.currentThread().getName() + "] " + getContext() + " - " + order + " -> 订单下发到支付");
+        System.out.println("[" + Thread.currentThread().getName() + "]" +
+                "[Context]" + getContext() + "[Order]" + order + "-> 订单下发到支付");
         // 仅模拟，实际是调用oms接口保存实体状态
         order.setState(next.getStateValue());
     }

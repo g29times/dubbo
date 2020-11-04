@@ -1,10 +1,8 @@
 package com.example.demo.state.order.experiment.concurrent;
 
-import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.StrategyApi;
 import com.example.demo.state.order.context.OrderContext;
 
-import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 
@@ -24,15 +22,12 @@ import java.util.concurrent.Callable;
  * @see Object
  * @since 1.0
  */
-public class Processor<T> implements Callable<Boolean> {
+public class Processor implements Callable<Boolean> {
 
-    private final BlockingQueue<StrategyApi<T>> queue;
+    private final BlockingQueue<StrategyApi> queue;
 
-    private final ContextApi<T> context;
-
-    public Processor(BlockingQueue<StrategyApi<T>> queue, ContextApi<T> context) {
+    public Processor(BlockingQueue<StrategyApi> queue) {
         this.queue = queue;
-        this.context = context;
     }
 
     @Override
@@ -41,8 +36,7 @@ public class Processor<T> implements Callable<Boolean> {
         try {
             while (true) {
                 StrategyApi request = queue.take();
-//                System.out.println(context.getDomain());
-                request.process(OrderContext.getOrderContext().getDomain());
+                request.process(OrderContext.getInstance().getDomain());
             }
         } catch (Exception e) {
             // 线程内异常捕获 Future https://blog.csdn.net/zangdaiyang1991/article/details/89228103

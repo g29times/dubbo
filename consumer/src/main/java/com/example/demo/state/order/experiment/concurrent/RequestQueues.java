@@ -22,18 +22,18 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @see Object
  * @since 1.0
  */
-public class RequestQueues<T> {
+public class RequestQueues {
 
     private RequestQueues() {
     }
 
-    private final List<BlockingQueue<StrategyApi<T>>> queues = new CopyOnWriteArrayList<>();
+    private final List<BlockingQueue> queues = new CopyOnWriteArrayList<>();
 
-    public BlockingQueue<StrategyApi<T>> getQueue(int index) {
+    public BlockingQueue getQueue(int index) {
         return queues.get(index);
     }
 
-    public void addQueue(BlockingQueue<StrategyApi<T>> queue) {
+    public void addQueue(BlockingQueue queue) {
         queues.add(queue);
     }
 

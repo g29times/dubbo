@@ -1,6 +1,7 @@
 package com.example.demo.state.order.state;
 
 import com.example.demo.state.order.StateApi;
+import com.example.demo.state.order.context.OrderContext;
 import com.example.demo.state.order.domain.Order;
 
 /**
@@ -20,6 +21,11 @@ import com.example.demo.state.order.domain.Order;
  * @since 1.0
  */
 public interface OrderState extends StateApi<Order> {
+
+    @Override
+    default OrderContext getContext() {
+        return OrderContext.getInstance();
+    }
 
     /**
      * 更新状态

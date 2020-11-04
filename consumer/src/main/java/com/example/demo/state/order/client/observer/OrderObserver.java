@@ -54,7 +54,7 @@ public class OrderObserver implements Observer {
     public static void listen() {
         ApplicationContext.addListener(event -> {
             Order source = (Order) event.getSource();
-            System.out.println("检测到事件源：" + source);
+            System.out.println("已更新订单状态：" + source);
         });
     }
 

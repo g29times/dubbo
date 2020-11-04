@@ -27,13 +27,12 @@ public class LogisticsCreate extends AbstractProcessor<Order> implements OrderSt
 
     private OrderContext context;
 
+    public LogisticsCreate() {
+    }
+
     public LogisticsCreate(ContextApi<Order> context) {
         this.context = (OrderContext) context;
         this.context.setState(this);
-    }
-
-    public LogisticsCreate() {
-
     }
 
     @Override
@@ -44,11 +43,6 @@ public class LogisticsCreate extends AbstractProcessor<Order> implements OrderSt
     @Override
     public void setStateValue(int value) {
         this.value = value;
-    }
-
-    @Override
-    public ContextApi<Order> getContext() {
-        return OrderContext.getOrderContext();
     }
 
     @Override

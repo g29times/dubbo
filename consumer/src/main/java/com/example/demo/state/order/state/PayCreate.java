@@ -28,15 +28,7 @@ public class PayCreate extends AbstractProcessor<Order> implements OrderState {
 
     private int value = 21;
 
-    private OrderContext context;
-
-    public PayCreate(ContextApi<Order> context) {
-        this.context = (OrderContext) context;
-        this.context.setState(this);
-    }
-
     public PayCreate() {
-
     }
 
     @Override
@@ -47,11 +39,6 @@ public class PayCreate extends AbstractProcessor<Order> implements OrderState {
     @Override
     public void setStateValue(int value) {
         this.value = value;
-    }
-
-    @Override
-    public ContextApi<Order> getContext() {
-        return OrderContext.getOrderContext();
     }
 
     @Override
@@ -68,7 +55,7 @@ public class PayCreate extends AbstractProcessor<Order> implements OrderState {
 
     @Override
     public void reverse(Order order) {
-        StateApi<Order> prev = context.getOrderCancel();
+        StateApi<Order> prev = getContext().getOrderCancel();
         getContext().setState(prev);
         System.out.println("[" + Thread.currentThread().getName() + "] " + getContext() + " - " + order + " -> 支付取消");
         order.setState(prev.getStateValue());
@@ -83,7 +70,7 @@ public class PayCreate extends AbstractProcessor<Order> implements OrderState {
 
         // 模拟调用支付系统 状态分支
         if (new PayServiceApi().addOrUpdate(new Bill())) {
-            StateApi<Order> next = context.getLogisticsCreate();
+            StateApi<Order> next = getContext().getLogisticsCreate();
             getContext().setState(next);
             System.out.println("[" + Thread.currentThread().getName() + "] " + getContext() + " - " + order + " -> 支付单下发到储运");
             order.setState(next.getStateValue());

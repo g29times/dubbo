@@ -52,10 +52,11 @@ public interface ContextApi<T> {
     }
 
     /**
-     * 继续下一步
+     * 验证 - 处理] - 变更状态 - [通知后驱
      */
     default ContextApi<T> next() {
-        fork(getState()::next);
+//        fork(getState()::next);
+        push(getState()::next);
         return this;
     }
 

@@ -7,16 +7,20 @@ import com.example.demo.state.demo.State;
 import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.StateApi;
 import com.example.demo.state.order.StrategyApi;
-import com.example.demo.state.order.experiment.concurrent.ProcessorPool;
 import com.example.demo.state.order.context.OrderContext;
 import com.example.demo.state.order.domain.Order;
 import com.example.demo.state.order.domain.OrderDto;
+import com.example.demo.state.order.experiment.concurrent.ProcessorPool;
 import com.example.demo.state.order.experiment.processor.OrderProcessorBuilder;
-import com.example.demo.state.order.state.OrderCreateState;
-import com.example.demo.state.order.state.OrderCancelState;
-import com.example.demo.state.order.state.OrderState;
-import com.example.demo.state.order.experiment.strategy.OrderCreateStrategy;
 import com.example.demo.state.order.experiment.strategy.OrderCancelStrategy;
+import com.example.demo.state.order.experiment.strategy.OrderCreateStrategy;
+import com.example.demo.state.order.state.OrderCancelState;
+import com.example.demo.state.order.state.OrderCreateState;
+import com.example.demo.state.order.state.OrderState;
+import com.example.demo.state.order.state.OrderStatusEnum;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * . _________         .__   _____   __
@@ -36,6 +40,33 @@ import com.example.demo.state.order.experiment.strategy.OrderCancelStrategy;
  */
 public class ClientTest {
 
+    public static class DB {
+        private DB() {
+        }
+
+        private Map<Long, Order> orderTable = new HashMap<>();
+
+        public Order getOrder(Long id) {
+            return orderTable.get(id);
+        }
+
+        public void setOrder(Order order) {
+            orderTable.put(order.getId(), order);
+        }
+
+        private static class Singleton {
+            static final DB db = new DB();
+        }
+
+        private static DB getDB() {
+            return Singleton.db;
+        }
+    }
+
+    public static DB getDB() {
+        return DB.getDB();
+    }
+
     public static void main(String[] args) {
 //        demo();
 
@@ -44,7 +75,34 @@ public class ClientTest {
 
 //        orderV3();
         orderV4();
+
 //        orderV5();
+//        orderV6();
+    }
+
+    private static void orderV6() {
+        Order order = new Order();
+        order.setId(1234L);
+        System.out.println(createOrderV6(order));
+
+        Order order1 = new Order();
+        order1.setId(1234L);
+        order1.setState(2);
+        System.out.println(updateOrderV6(order1));
+    }
+
+    private static Order createOrderV6(Order order) {
+        DB db = DB.getDB();
+        db.setOrder(order);
+        return order;
+    }
+
+    private static Order updateOrderV6(Order order) {
+        DB db = DB.getDB();
+        Order orderDB = db.getOrder(order.getId());
+        orderDB.setState(order.getState());
+        db.setOrder(orderDB);
+        return orderDB;
     }
 
     private static void orderV5() {
@@ -52,7 +110,7 @@ public class ClientTest {
 //        getSubmitPreProcessorBuilder(bizType).build().invoke(context, ret);
 
         // order
-        OrderContext orderFlow = new OrderContext();
+        OrderContext orderFlow = OrderContext.getInstance();
         Order order = new Order();
         order.setId(1234L);
 
@@ -61,37 +119,42 @@ public class ClientTest {
     }
 
     private static void orderV4() {
-        OrderContext orderFlow = new OrderContext();
+//        OrderContext orderContext = OrderContext.getInstance();
         Order order = new Order();
         order.setId(1234L);
+        // 场景 状态跳号
+//        order.setState(OrderStatusEnum.PAY());
 
         ProcessorPool.start();
-        orderFlow.of(order).next().fork(orderFlow::next).getDomain();
+        OrderContext.getInstance().of(order).next().next()/*.fork(orderContext::next)*/.getDomain();
         try {
-            Thread.sleep(1000L);
+            Thread.sleep(100L);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        orderFlow.peek();
-//        orderPool.stop();
+//        orderContext.peek();
+////        ProcessorPool.stop();
+        System.gc();
     }
 
     private static void orderV3() {
-        OrderContext orderFlow = new OrderContext();
+        OrderContext orderFlow = OrderContext.getInstance();
         Order order = new Order();
         order.setId(1234L);
+//        order.setState(OrderStatusEnum.PAY.getCode());
 
         // of(order) | order.create() | orderService.create(order);
 //        order = orderFlow.of(order).push(OrderStrategy::process).push(OrderStrategy::process).get();
         order = orderFlow.of(order).push(orderFlow::next).push(orderFlow::next).getDomain();
         System.out.println("print --- " + order);
-        OrderDto dto = orderFlow.of(order).map(OrderDto::new).getDomain();
-        System.out.println("TEST: " + dto);
+//        OrderDto dto = orderFlow.of(order).map(OrderDto::new).getDomain();
+//        System.out.println("TEST: " + dto);
     }
-    private static class OrderStrategy {
+
+    private static class OrderStrategyV3 {
         public static void process(Order order) {
             // TODO 需配置化
-            OrderContext context = OrderContext.getOrderContext();
+            OrderContext context = OrderContext.getInstance();
             OrderState create = context.getOrderCreate();
             create.update(order);
 //        db.insert(order);
@@ -102,7 +165,7 @@ public class ClientTest {
     }
 
     private static void orderV2() {
-        ContextApi<Order> orderFlow = new OrderContext();
+        ContextApi<Order> orderFlow = OrderContext.getInstance();
         Order order = new Order();
         order.setId(1234L);
         orderFlow.setStrategy(new OrderCreateStrategy(orderFlow)).request(order);
@@ -110,10 +173,10 @@ public class ClientTest {
     }
 
     private static void orderV1() {
-        ContextApi<Order> orderFlow = new OrderContext();
+        ContextApi<Order> orderFlow = OrderContext.getInstance();
         Order order = new Order();
 
-        StateApi<Order> create = new OrderCreateState(orderFlow);
+        StateApi<Order> create = new OrderCreateState(/*orderFlow*/);
         orderFlow.setState(create);
         StrategyApi<Order> createStrategy = new OrderCreateStrategy(orderFlow);
         orderFlow.setStrategy(createStrategy);

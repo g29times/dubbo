@@ -49,9 +49,9 @@ public class Order extends Observable {
 
     public void setState(int state) {
         this.state = state;
-        // TODO 因要改造实体 待定
-        setChanged(); // 状态改变必须调用
-        notifyObservers(/*state*/); // 拉模式
+//        // 观察者 - 拉模式
+//        setChanged(); // 状态改变必须调用
+//        notifyObservers(/*state*/);
         // 事件方式
         ApplicationContext.publishEvent(new ApplicationEvent(this));
     }

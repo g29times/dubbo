@@ -7,10 +7,7 @@ import java.util.function.Supplier;
 
 public interface Request<T> extends StrategyApi<T> {
 
-    void process();
-
-    void process(Supplier supplier);
-
+    // TODO 路由
     Long getDomainId();
 
 }

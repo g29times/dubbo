@@ -4,12 +4,12 @@ import com.alibaba.ttl.TransmittableThreadLocal;
 import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.StateApi;
 import com.example.demo.state.order.StrategyApi;
-import com.example.demo.state.order.client.observer.ApplicationContext;
 import com.example.demo.state.order.client.observer.OrderObserver;
 import com.example.demo.state.order.domain.Order;
-import com.example.demo.state.order.state.*;
+import com.example.demo.state.order.state.OrderState;
+import com.example.demo.state.order.state.OrderStatusEnum;
 
-import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 
 /**
  * . _________         .__   _____   __
@@ -28,63 +28,102 @@ import java.lang.ref.SoftReference;
  * @since 1.0
  */
 public class OrderContext implements ContextApi<Order> {
+    /**
+     * 3
+     */
+    private static final class Singleton {
+        private static final OrderContext INSTANCE = new OrderContext();
+    }
+    /**
+     * 2
+     */
+    private static final TransmittableThreadLocal<OrderContext> THREAD_CONTEXT =
+            new TransmittableThreadLocal<OrderContext>() {
+                @Override
+                protected OrderContext initialValue() {
+                    return new OrderContext();
+                }
+            };
+    /**
+     * 1
+     */
+    private static final TransmittableThreadLocal<WeakReference<OrderContext>> WEAK_CONTEXT =
+            new TransmittableThreadLocal<WeakReference<OrderContext>>() {
+                @Override
+                protected WeakReference<OrderContext> initialValue() {
+                    return new WeakReference<>(new OrderContext());
+                }
+            };
 
-    private static final TransmittableThreadLocal<SoftReference<OrderContext>> CONTEXT = new TransmittableThreadLocal<>();
-
-    public OrderContext() {
+    private OrderContext() {
         // 初始化上下文
-        System.out.println(" --- OrderContext is created --- ");
-        SoftReference<OrderContext> sf = new SoftReference<>(this);
-        CONTEXT.set(sf);
+        System.out.println(Thread.currentThread() + " --- OrderContext is created! --- " + this.hashCode());
         // 创建状态集
-        this.orderCreate = new OrderCreateState(this);
-        this.orderFinish = new OrderFinishState(this);
-        this.orderCancel = new OrderCancelState(this);
-        this.payCreate = new PayCreate(this);
-        this.logisticsCreate = new LogisticsCreate(this);
-        // 设置初始状态
-        initState();
+        this.orderCreate = OrderStatusEnum.CREATE.getState();
+        this.orderFinish = OrderStatusEnum.FINISH.getState();
+        this.orderCancel = OrderStatusEnum.CANCLE.getState();
+        this.payCreate = OrderStatusEnum.PAY.getState();
+        this.logisticsCreate = OrderStatusEnum.LOGISTICS.getState();
         // 开始监听
         OrderObserver.listen();
     }
 
-    public static OrderContext getOrderContext() {
-        return CONTEXT.get().get();
+    @Override
+    protected void finalize() throws Throwable {
+        removeContext();
+        super.finalize();
+        System.out.println("Context is disposed!");
+    }
+
+    public static OrderContext getInstance() {
+        return Singleton.INSTANCE;
+    }
+
+    public static OrderContext getThreadContext() {
+        return THREAD_CONTEXT.get();
+    }
+
+    public static OrderContext getWeakContext() {
+        return WEAK_CONTEXT.get().get();
     }
 
     public static void restoreContext(OrderContext oldContext) {
-        CONTEXT.set(new SoftReference<>(oldContext));
+        THREAD_CONTEXT.set(oldContext);
+        WEAK_CONTEXT.set(new WeakReference<>(oldContext));
     }
 
-    public static void removeContext() {
+    private static void removeContext() {
         System.out.println("removeContext");
-        CONTEXT.remove();
+        THREAD_CONTEXT.remove();
+        WEAK_CONTEXT.remove();
     }
+
+    // ************************************** 基础属性区
 
     private Order domain;
 
     @Override
     public ContextApi<Order> of(Order domain) {
-        if (domain.getState() == 0) {
+        if (domain.getState() == null || domain.getState() == 0) {
+            // 设置初始状态
+            this.state = this.orderCreate;
             domain.setState(this.orderCreate.getStateValue());
 //        db.insert(domain);
-            System.out.println(getOrderContext() + " - " + "订单已创建 " + domain);
+            System.out.println(this + " - " + "订单已创建 " + domain);
+        } else {
+            this.state = OrderStatusEnum.get(domain.getState());
         }
         setDomain(domain);
         return this;
     }
 
     /**
-     * 持有一个State类型的对象实例
+     * 状态 持有一个State类型的对象实例
      */
     private OrderState state;
 
-    private void initState() {
-        this.state = this.orderCreate;
-    }
-
     /**
-     * 定义出所有状态
+     * 状态 定义出所有状态
      */
     private final OrderState orderCreate;
     private final OrderState orderFinish;
@@ -93,7 +132,7 @@ public class OrderContext implements ContextApi<Order> {
     private final OrderState logisticsCreate;
 
     /**
-     * 持有一个Strategy类型的对象实例
+     * 策略 持有一个Strategy类型的对象实例
      */
     private StrategyApi strategy;
 
@@ -132,7 +171,7 @@ public class OrderContext implements ContextApi<Order> {
 
     @Override
     public StateApi getState() {
-        return (StateApi) state;
+        return state;
     }
 
     @Override
@@ -154,7 +193,7 @@ public class OrderContext implements ContextApi<Order> {
 
     @Override
     public String toString() {
-        return OrderContext.class.getSimpleName();
+        return this.hashCode() + "";
     }
 
     // *************************** 业务方法区
@@ -181,7 +220,6 @@ public class OrderContext implements ContextApi<Order> {
         state.reverse(order);
     }
 
-//    @Override
     public void next(Order order) {
         state.next(order);
     }
