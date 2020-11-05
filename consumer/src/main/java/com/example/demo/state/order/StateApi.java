@@ -1,8 +1,5 @@
 package com.example.demo.state.order;
 
-import com.example.demo.state.order.context.OrderContext;
-import com.example.demo.state.order.domain.Order;
-
 /**
  * . _________         .__   _____   __
  * ./   _____/__  _  __|__|_/ ____\_/  |_
@@ -30,12 +27,14 @@ public interface StateApi<T> {
 
     /**
      * 设置状态
+     *
      * @param value 1 Create 2 Finish 3 Return
      */
     void setStateValue(int value);
 
     /**
      * 获取上下文
+     *
      * @return 上下文
      */
     ContextApi<T> getContext();
@@ -44,5 +43,15 @@ public interface StateApi<T> {
      * 下推
      */
     void next(T domain);
+
+    /**
+     * 执行
+     */
+    void process(T domain);
+
+    /**
+     * 获取业务主键
+     */
+    Long getDomainId();
 
 }

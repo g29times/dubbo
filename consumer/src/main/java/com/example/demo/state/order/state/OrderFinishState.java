@@ -63,4 +63,9 @@ public class OrderFinishState implements OrderState {
     public void next(Order order) {
 
     }
+
+    @Override
+    public void process(Order domain) {
+        next(domain);
+    }
 }

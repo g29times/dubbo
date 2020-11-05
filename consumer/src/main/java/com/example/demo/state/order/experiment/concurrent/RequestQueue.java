@@ -1,9 +1,9 @@
 package com.example.demo.state.order.experiment.concurrent;
 
-import com.example.demo.state.order.StrategyApi;
-
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -22,12 +22,22 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @see Object
  * @since 1.0
  */
-public class RequestQueues {
+public class RequestQueue {
 
-    private RequestQueues() {
+    /**
+     * 内存队列
+     */
+    private final List<BlockingQueue> queues = new CopyOnWriteArrayList<>();
+    /**
+     * 标识位map
+     */
+    private final Map<Long, Boolean> flagMap = new ConcurrentHashMap<>();
+    private RequestQueue() {
     }
 
-    private final List<BlockingQueue> queues = new CopyOnWriteArrayList<>();
+    public static RequestQueue getInstance() {
+        return RequestQueue.Singleton.INSTANCE;
+    }
 
     public BlockingQueue getQueue(int index) {
         return queues.get(index);
@@ -37,15 +47,15 @@ public class RequestQueues {
         queues.add(queue);
     }
 
-    public int size() {
+    public int queueSize() {
         return queues.size();
     }
 
-    public static  RequestQueues getInstance() {
-        return RequestQueues.Singleton.INSTANCE;
+    public Map<Long, Boolean> getFlagMap() {
+        return flagMap;
     }
 
     private static final class Singleton {
-        private static final RequestQueues INSTANCE = new RequestQueues();
+        private static final RequestQueue INSTANCE = new RequestQueue();
     }
 }

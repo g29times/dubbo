@@ -21,7 +21,7 @@ import com.example.demo.state.order.state.OrderState;
  * @see AbstractProcessorBuilder
  * @since 1.0
  */
-public class OrderCancelStrategy implements StrategyApi<Order> {
+public class OrderCancelStrategy implements Strategy<Order> {
 
     private OrderContext context;
 

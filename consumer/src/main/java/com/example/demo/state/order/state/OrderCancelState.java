@@ -63,4 +63,9 @@ public class OrderCancelState implements OrderState {
     public void next(Order order) {
 
     }
+
+    @Override
+    public void process(Order domain) {
+
+    }
 }

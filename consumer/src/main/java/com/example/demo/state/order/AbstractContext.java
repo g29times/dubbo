@@ -20,7 +20,7 @@ abstract class AbstractContext<T> implements ContextApi<T> {
 
     private T domain;
     private StateApi<T> state;
-    private StrategyApi<T> strategy;
+    private Strategy<T> strategy;
 
     @Override
     public void request(T domain) {
@@ -30,6 +30,11 @@ abstract class AbstractContext<T> implements ContextApi<T> {
     @Override
     public T getDomain() {
         return domain;
+    }
+
+    @Override
+    public Long getDomainId() {
+        return -1L;
     }
 
     @Override
@@ -50,13 +55,19 @@ abstract class AbstractContext<T> implements ContextApi<T> {
     }
 
     @Override
-    public StrategyApi<T> getStrategy() {
+    public Strategy<T> getStrategy() {
         return strategy;
     }
 
     @Override
-    public ContextApi<T> setStrategy(StrategyApi<T> strategy) {
+    public ContextApi<T> setStrategy(Strategy<T> strategy) {
         this.strategy = strategy;
         return this;
     }
+
+    @Override
+    public RequestAsyncProcessService getAsyncProcessor() {
+        return null;
+    }
+
 }

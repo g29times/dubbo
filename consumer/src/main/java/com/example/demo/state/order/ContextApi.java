@@ -1,7 +1,7 @@
 package com.example.demo.state.order;
 
 import com.example.demo.state.order.domain.Transformer;
-import com.example.demo.state.order.experiment.concurrent.RequestQueues;
+import com.example.demo.state.order.experiment.concurrent.RequestQueue;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -26,48 +26,11 @@ public interface ContextApi<T> {
     }
 
     /**
-     * 分发任务
-     *
-     * @param strategyApi 流程策略
-     * @return 上下文
-     */
-    default ContextApi<T> fork(StrategyApi<T> strategyApi) {
-        RequestQueues requestQueues = RequestQueues.getInstance();
-        BlockingQueue<StrategyApi> queue = requestQueues.getQueue(0);
-        try {
-            queue.put(strategyApi);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return this;
-    }
-
-    /**
      * 查看实体
      */
     default ContextApi<T> peek() {
         System.out.print("peek --- ");
         fork(System.out::println);
-        return this;
-    }
-
-    /**
-     * 验证 - 处理] - 变更状态 - [通知后驱
-     */
-    default ContextApi<T> next() {
-//        fork(getState()::next);
-        push(getState()::next);
-        return this;
-    }
-
-    /**
-     * 推进任务
-     *
-     * @param strategyApi 流程策略
-     * @return 上下文
-     */
-    default ContextApi<T> push(StrategyApi<T> strategyApi) {
-        strategyApi.process(getDomain());
         return this;
     }
 
@@ -83,7 +46,48 @@ public interface ContextApi<T> {
         }.of(transformer.transform(getDomain()));
     }
 
+    /**
+     * 分发任务
+     *
+     * @param strategy 流程策略
+     * @return 上下文
+     */
+    default ContextApi<T> fork(Strategy<T> strategy) {
+        strategy.process(getDomain());
+        return this;
+    }
+
+    default ContextApi<T> process() {
+        getAsyncProcessor().process(getState());
+        return this;
+    }
+
+    /**
+     * 验证 - 处理] - 变更状态 - [通知后驱
+     */
+    default ContextApi<T> next() {
+//        fork(getState()::next);
+        push(getState()::next);
+        return this;
+    }
+
+    /**
+     * 推进任务
+     *
+     * @param strategy 流程策略
+     * @return 上下文
+     */
+    default ContextApi<T> push(Strategy<T> strategy) {
+        strategy.process(getDomain());
+        return this;
+    }
+
     // *************************** 业务方法区
+
+    /**
+     * 获取异步处理器
+     */
+    RequestAsyncProcessService getAsyncProcessor();
 
     /**
      * 执行流程
@@ -108,6 +112,7 @@ public interface ContextApi<T> {
      * @return 实体
      */
     T getDomain();
+    Long getDomainId();
 
     /**
      * 设置实体
@@ -137,7 +142,7 @@ public interface ContextApi<T> {
      *
      * @return 流程策略
      */
-    StrategyApi<T> getStrategy();
+    Strategy<T> getStrategy();
 
     /**
      * 设定流程策略
@@ -145,6 +150,6 @@ public interface ContextApi<T> {
      * @param strategy 流程策略
      * @return 上下文
      */
-    ContextApi<T> setStrategy(StrategyApi<T> strategy);
+    ContextApi<T> setStrategy(Strategy<T> strategy);
 
 }

@@ -1,6 +1,6 @@
 package com.example.demo.state.order.experiment.concurrent;
 
-import com.example.demo.state.order.StrategyApi;
+import com.example.demo.state.order.StateApi;
 import com.example.demo.state.order.context.OrderContext;
 
 import java.util.concurrent.BlockingQueue;
@@ -24,9 +24,9 @@ import java.util.concurrent.Callable;
  */
 public class Processor implements Callable<Boolean> {
 
-    private final BlockingQueue<StrategyApi> queue;
+    private final BlockingQueue<StateApi> queue;
 
-    public Processor(BlockingQueue<StrategyApi> queue) {
+    public Processor(BlockingQueue<StateApi> queue) {
         this.queue = queue;
     }
 
@@ -35,7 +35,7 @@ public class Processor implements Callable<Boolean> {
         System.out.println("Thread " + Thread.currentThread().getName() + " is running");
         try {
             while (true) {
-                StrategyApi request = queue.take();
+                StateApi request = queue.take();
                 request.process(OrderContext.getInstance().getDomain());
             }
         } catch (Exception e) {

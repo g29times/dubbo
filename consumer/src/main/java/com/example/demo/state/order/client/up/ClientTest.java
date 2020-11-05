@@ -5,11 +5,11 @@ import com.example.demo.state.demo.ConcreteStateB;
 import com.example.demo.state.demo.Context;
 import com.example.demo.state.demo.State;
 import com.example.demo.state.order.ContextApi;
+import com.example.demo.state.order.OrderRequestAsyncProcessServiceImpl;
 import com.example.demo.state.order.StateApi;
-import com.example.demo.state.order.StrategyApi;
+import com.example.demo.state.order.Strategy;
 import com.example.demo.state.order.context.OrderContext;
 import com.example.demo.state.order.domain.Order;
-import com.example.demo.state.order.domain.OrderDto;
 import com.example.demo.state.order.experiment.concurrent.ProcessorPool;
 import com.example.demo.state.order.experiment.processor.OrderProcessorBuilder;
 import com.example.demo.state.order.experiment.strategy.OrderCancelStrategy;
@@ -122,18 +122,18 @@ public class ClientTest {
 //        OrderContext orderContext = OrderContext.getInstance();
         Order order = new Order();
         order.setId(1234L);
-        // 场景 状态跳号
-//        order.setState(OrderStatusEnum.PAY());
-
+        // TODO 1 验证 状态跳号 (数据库) 2 幂等
+        order.setState(OrderStatusEnum.PAY.getCode());
         ProcessorPool.start();
-        OrderContext.getInstance().of(order).next().next()/*.fork(orderContext::next)*/.getDomain();
+        OrderContext.getInstance().of(order).process().process();
+//        OrderContext.getInstance().of(order).next().next()/*.fork(orderContext::next)*/.getDomain();
         try {
             Thread.sleep(100L);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-//        orderContext.peek();
-////        ProcessorPool.stop();
+        OrderContext.getInstance().peek();
+//        ProcessorPool.stop();
         System.gc();
     }
 
@@ -178,14 +178,14 @@ public class ClientTest {
 
         StateApi<Order> create = new OrderCreateState(/*orderFlow*/);
         orderFlow.setState(create);
-        StrategyApi<Order> createStrategy = new OrderCreateStrategy(orderFlow);
+        Strategy<Order> createStrategy = new OrderCreateStrategy(orderFlow);
         orderFlow.setStrategy(createStrategy);
         orderFlow.request(order);
         System.out.println();
 
         StateApi<Order> reverse = new OrderCancelState(orderFlow);
         orderFlow.setState(reverse);
-        StrategyApi<Order> reverseStrategy = new OrderCancelStrategy(orderFlow);
+        Strategy<Order> reverseStrategy = new OrderCancelStrategy(orderFlow);
         orderFlow.setStrategy(reverseStrategy);
         orderFlow.request(order);
     }

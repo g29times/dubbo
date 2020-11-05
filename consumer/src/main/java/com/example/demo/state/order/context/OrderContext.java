@@ -1,9 +1,7 @@
 package com.example.demo.state.order.context;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
-import com.example.demo.state.order.ContextApi;
-import com.example.demo.state.order.StateApi;
-import com.example.demo.state.order.StrategyApi;
+import com.example.demo.state.order.*;
 import com.example.demo.state.order.client.observer.OrderObserver;
 import com.example.demo.state.order.domain.Order;
 import com.example.demo.state.order.state.OrderState;
@@ -134,7 +132,7 @@ public class OrderContext implements ContextApi<Order> {
     /**
      * 策略 持有一个Strategy类型的对象实例
      */
-    private StrategyApi strategy;
+    private Strategy strategy;
 
     // *************************** 基础方法区
 
@@ -164,6 +162,11 @@ public class OrderContext implements ContextApi<Order> {
     }
 
     @Override
+    public Long getDomainId() {
+        return domain.getId();
+    }
+
+    @Override
     public ContextApi setDomain(Order domain) {
         this.domain = domain;
         return this;
@@ -181,12 +184,12 @@ public class OrderContext implements ContextApi<Order> {
     }
 
     @Override
-    public StrategyApi getStrategy() {
+    public Strategy getStrategy() {
         return strategy;
     }
 
     @Override
-    public ContextApi setStrategy(StrategyApi strategy) {
+    public ContextApi setStrategy(Strategy strategy) {
         this.strategy = strategy;
         return this;
     }
@@ -224,4 +227,10 @@ public class OrderContext implements ContextApi<Order> {
         state.next(order);
     }
 
+    private final RequestAsyncProcessService asyncProcessor = new OrderRequestAsyncProcessServiceImpl();
+
+    @Override
+    public RequestAsyncProcessService getAsyncProcessor() {
+        return asyncProcessor;
+    }
 }

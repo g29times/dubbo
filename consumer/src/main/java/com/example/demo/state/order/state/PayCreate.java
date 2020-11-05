@@ -81,7 +81,7 @@ public class PayCreate extends AbstractProcessor<Order> implements OrderState {
 
     @Override
     public void process(Order order) {
-        update(order);
+        next(order);
     }
 
 }

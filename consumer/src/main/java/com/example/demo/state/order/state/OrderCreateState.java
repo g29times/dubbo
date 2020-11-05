@@ -83,7 +83,7 @@ public class OrderCreateState extends AbstractProcessor<Order> implements OrderS
      */
     @Override
     public void process(Order order) {
-        update(order);
+        next(order);
     }
 
 }

@@ -3,7 +3,7 @@ package com.example.demo.state.order.experiment.strategy;
 import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.context.OrderContext;
 import com.example.demo.state.order.domain.Order;
-import com.example.demo.state.order.StrategyApi;
+import com.example.demo.state.order.Strategy;
 import com.example.demo.state.order.state.OrderState;
 
 /**
@@ -22,7 +22,7 @@ import com.example.demo.state.order.state.OrderState;
  * @see AbstractProcessorBuilder
  * @since 1.0
  */
-public class OrderCreateStrategy implements StrategyApi<Order> {
+public class OrderCreateStrategy implements Strategy<Order> {
 
 	private OrderContext context;
 

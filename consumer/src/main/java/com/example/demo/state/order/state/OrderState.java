@@ -27,6 +27,11 @@ public interface OrderState extends StateApi<Order> {
         return OrderContext.getInstance();
     }
 
+    @Override
+    default Long getDomainId() {
+        return getContext().getDomainId();
+    }
+
     /**
      * 更新状态
      */
@@ -41,6 +46,6 @@ public interface OrderState extends StateApi<Order> {
      * 操作日志（快照）
      */
     default void log(Order order) {
-        System.out.println(getContext() + " - " + order + " 操作日志已记录。"/* + getStateValue()*/);
+        System.out.println(getContext() + " - " + order + " 操作日志已记录。");
     }
 }

@@ -64,6 +64,6 @@ public class LogisticsCreate extends AbstractProcessor<Order> implements OrderSt
 
     @Override
     public void process(Order order) {
-        update(order);
+        next(order);
     }
 }
