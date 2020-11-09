@@ -1,12 +1,10 @@
 package com.example.demo.state.order;
 
 import com.example.demo.state.order.domain.Transformer;
-import com.example.demo.state.order.experiment.concurrent.RequestQueue;
-
-import java.util.concurrent.BlockingQueue;
 
 /**
  * 业务主体上下文
+ * Context即Domain 只是包装了一层
  *
  * @see org.apache.dubbo.rpc.RpcContext
  * @see org.springframework.context.ConfigurableApplicationContext
@@ -16,21 +14,11 @@ public interface ContextApi<T> {
     // *************************** 流式编程区
 
     /**
-     * 包含实体
-     *
-     * @param domain 实体
-     * @return 上下文
-     */
-    default ContextApi<T> of(T domain) {
-        return setDomain(domain);
-    }
-
-    /**
      * 查看实体
      */
     default ContextApi<T> peek() {
         System.out.print("peek --- ");
-        fork(System.out::println);
+        push(System.out::println);
         return this;
     }
 
@@ -43,27 +31,27 @@ public interface ContextApi<T> {
      */
     default <D> ContextApi<D> map(Transformer<T, D> transformer) {
         return new AbstractContext<D>() {
-        }.of(transformer.transform(getDomain()));
+        }.setDomain(transformer.transform(getDomain()));
     }
+
+//    default ContextApi<T> fork(Strategy<T> strategy) {
+//        strategy.process(getDomain());
+//        return this;
+//    }
 
     /**
      * 分发任务
      *
-     * @param strategy 流程策略
      * @return 上下文
      */
-    default ContextApi<T> fork(Strategy<T> strategy) {
-        strategy.process(getDomain());
-        return this;
-    }
-
     default ContextApi<T> process() {
         getAsyncProcessor().process(getState());
         return this;
     }
 
     /**
-     * 验证 - 处理] - 变更状态 - [通知后驱
+     * 推进任务(默认)
+     * 1 验证 - 2 处理 - 3 变更状态 - 4 通知
      */
     default ContextApi<T> next() {
 //        fork(getState()::next);
@@ -99,12 +87,12 @@ public interface ContextApi<T> {
 
     /**
      * 下推流程
-     *
-     * @param domain 实体
      */
 //    void next(T domain);
 
     // *************************** 基础方法区
+
+    Long getDomainId();
 
     /**
      * 获取实体
@@ -112,7 +100,6 @@ public interface ContextApi<T> {
      * @return 实体
      */
     T getDomain();
-    Long getDomainId();
 
     /**
      * 设置实体
@@ -127,7 +114,7 @@ public interface ContextApi<T> {
      *
      * @return 状态
      */
-    StateApi<T> getState();
+    RequestState<T> getState();
 
     /**
      * 设定状态
@@ -135,7 +122,7 @@ public interface ContextApi<T> {
      * @param state 状态
      * @return 上下文
      */
-    ContextApi<T> setState(StateApi<T> state);
+    ContextApi<T> setState(RequestState<T> state);
 
     /**
      * 查询流程策略

@@ -20,13 +20,13 @@ public class Bill {
 
     private Long id;
 
-    private int state;
+    private int billState;
 
     @Override
     public String toString() {
         return "Bill{" +
                 "id=" + id +
-                ", state=" + state +
+                ", billState=" + billState +
                 '}';
     }
 
@@ -38,11 +38,11 @@ public class Bill {
         this.id = id;
     }
 
-    public int getState() {
-        return state;
+    public int getBillState() {
+        return billState;
     }
 
-    public void setState(int state) {
-        this.state = state;
+    public void setBillState(int billState) {
+        this.billState = billState;
     }
 }

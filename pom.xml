@@ -27,6 +27,7 @@
     <modules>
         <module>provider</module>
         <module>consumer</module>
+        <module>jraft</module>
     </modules>
 
     <dependencies>

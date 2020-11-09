@@ -1,6 +1,10 @@
 package com.example.demo.state.order;
 
 
+import com.example.demo.state.order.experiment.concurrent.Processor;
+
+import java.util.concurrent.BlockingQueue;
+
 /**
  * 请求异步执行的service
  *
@@ -8,6 +12,11 @@ package com.example.demo.state.order;
  */
 public interface RequestAsyncProcessService {
 
-    void process(StateApi request);
+    void process(RequestState stateRequest);
 
+    void put(BlockingQueue key, Processor value);
+
+    Processor get(BlockingQueue key);
+
+    Processor getProcessor(Long productId);
 }

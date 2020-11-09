@@ -21,9 +21,11 @@ import com.example.demo.state.order.experiment.processor.AbstractProcessor;
  * @see Object
  * @since 1.0
  */
-public class LogisticsCreate extends AbstractProcessor<Order> implements OrderState {
+public class LogisticsCreate extends AbstractProcessor<Order> implements OrderRequestState {
 
     private int value = 31;
+
+    private final String desc = "运送中";
 
     private OrderContext context;
 
@@ -41,14 +43,22 @@ public class LogisticsCreate extends AbstractProcessor<Order> implements OrderSt
     }
 
     @Override
-    public void setStateValue(int value) {
-        this.value = value;
+    public String getDesc() {
+        return desc;
+    }
+
+    @Override
+    public String toString() {
+        return "LogisticsCreate{" +
+                "value=" + value +
+                ", desc='" + desc + '\'' +
+                '}';
     }
 
     @Override
     public void update(Order order) {
-        getContext().setState(this);
-        System.out.println(getContext() + " - " + order + " -> 创建储运单");
+        getContext(order).setState(this);
+        System.out.println(getContext(order) + " - " + order + " -> 创建储运单");
         order.setState(value);
     }
 
@@ -59,7 +69,7 @@ public class LogisticsCreate extends AbstractProcessor<Order> implements OrderSt
 
     @Override
     public void next(Order order) {
-        System.out.println("已送达");
+        System.out.println("[" + Thread.currentThread().getName() + "] " + getContext(order) + " - " + order + " 运送 -> 已送达");
     }
 
     @Override

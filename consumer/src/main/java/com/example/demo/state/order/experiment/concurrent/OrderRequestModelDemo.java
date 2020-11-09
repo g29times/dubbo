@@ -16,7 +16,7 @@ package com.example.demo.state.order.experiment.concurrent;
  * @see Object
  * @since 1.0
  */
-public class OrderRequest implements Request {
+public class OrderRequestModelDemo implements RequestModelDemo {
     @Override
     public void process() {
 

@@ -19,7 +19,7 @@ package com.example.demo.state.order;
 abstract class AbstractContext<T> implements ContextApi<T> {
 
     private T domain;
-    private StateApi<T> state;
+    private RequestState<T> state;
     private Strategy<T> strategy;
 
     @Override
@@ -44,12 +44,12 @@ abstract class AbstractContext<T> implements ContextApi<T> {
     }
 
     @Override
-    public StateApi<T> getState() {
+    public RequestState<T> getState() {
         return state;
     }
 
     @Override
-    public ContextApi<T> setState(StateApi<T> state) {
+    public ContextApi<T> setState(RequestState<T> state) {
         this.state = state;
         return this;
     }

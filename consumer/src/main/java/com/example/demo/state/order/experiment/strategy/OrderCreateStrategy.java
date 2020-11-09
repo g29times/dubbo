@@ -4,7 +4,7 @@ import com.example.demo.state.order.ContextApi;
 import com.example.demo.state.order.context.OrderContext;
 import com.example.demo.state.order.domain.Order;
 import com.example.demo.state.order.Strategy;
-import com.example.demo.state.order.state.OrderState;
+import com.example.demo.state.order.state.OrderRequestState;
 
 /**
  * . _________         .__   _____   __
@@ -32,7 +32,7 @@ public class OrderCreateStrategy implements Strategy<Order> {
 
 	@Override
 	public void process(Order order) {
-		OrderState state = context.getOrderCreate();
+		OrderRequestState state = context.getOrderCreate();
 		state.update(order);
 		state.next(order);
 		state.log(order);

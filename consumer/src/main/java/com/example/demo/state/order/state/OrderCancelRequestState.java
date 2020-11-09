@@ -20,16 +20,18 @@ import com.example.demo.state.order.context.OrderContext;
  * @see Object
  * @since 1.0
  */
-public class OrderCancelState implements OrderState {
+public class OrderCancelRequestState implements OrderRequestState {
 
     private int value = 10;
 
+    private final String desc = "已取消";
+
     private OrderContext context;
 
-    public OrderCancelState() {
+    public OrderCancelRequestState() {
     }
 
-    public OrderCancelState(ContextApi<Order> context) {
+    public OrderCancelRequestState(ContextApi<Order> context) {
         this.context = (OrderContext) context;
         this.context.setState(this);
     }
@@ -40,13 +42,16 @@ public class OrderCancelState implements OrderState {
     }
 
     @Override
-    public void setStateValue(int state) {
-        this.value = state;
+    public String getDesc() {
+        return desc;
     }
 
     @Override
     public String toString() {
-        return getStateValue() + "";
+        return "OrderCancelState{" +
+                "value=" + value +
+                ", desc='" + desc + '\'' +
+                '}';
     }
 
     @Override
@@ -66,6 +71,6 @@ public class OrderCancelState implements OrderState {
 
     @Override
     public void process(Order domain) {
-
+        next(domain);
     }
 }

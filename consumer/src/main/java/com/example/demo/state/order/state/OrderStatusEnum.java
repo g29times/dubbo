@@ -15,17 +15,17 @@ public enum OrderStatusEnum {
     /**
      * 创建订单
      */
-    CREATE(11, new OrderCreateState()),
+    CREATE(11, new OrderCreateRequestState()),
 
     /**
      * 取消订单
      */
-    CANCLE(10, new OrderCancelState()),
+    CANCLE(10, new OrderCancelRequestState()),
 
     /**
      * 完成订单
      */
-    FINISH(13, new OrderFinishState()),
+    FINISH(13, new OrderFinishRequestState()),
 
     /**
      * 已支付订单
@@ -37,14 +37,14 @@ public enum OrderStatusEnum {
      */
     LOGISTICS(31, new LogisticsCreate());
 
-    OrderStatusEnum(int code, OrderState state) {
+    OrderStatusEnum(int code, OrderRequestState state) {
         this.code = code;
         this.state = state;
     }
 
     private final int code;
 
-    private final OrderState state;
+    private final OrderRequestState state;
 
     private static Map<Integer, OrderStatusEnum> enumMaps = new HashMap<>();
 
@@ -60,7 +60,7 @@ public enum OrderStatusEnum {
      * @param id id
      * @return 名称
      */
-    public static OrderState get(Integer id) {
+    public static OrderRequestState get(Integer id) {
         return enumMaps.get(id).getState();
     }
 
@@ -68,7 +68,7 @@ public enum OrderStatusEnum {
         return code;
     }
 
-    public OrderState getState() {
+    public OrderRequestState getState() {
         return state;
     }
 

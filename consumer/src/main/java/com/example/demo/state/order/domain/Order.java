@@ -2,6 +2,7 @@ package com.example.demo.state.order.domain;
 
 import com.example.demo.state.order.client.observer.ApplicationContext;
 import com.example.demo.state.order.client.observer.ApplicationEvent;
+import com.example.demo.state.order.state.OrderStatusEnum;
 
 import java.util.Observable;
 
@@ -25,6 +26,9 @@ public class Order extends Observable {
 
     private Long id;
 
+    /**
+     * @see com.example.demo.state.order.state.OrderStatusEnum
+     */
     private int state;
 
     @Override
@@ -32,6 +36,7 @@ public class Order extends Observable {
         return "Order{" +
                 "id=" + id +
                 ", state=" + state +
+                ", desc=" + OrderStatusEnum.get(state).getDesc() +
                 '}';
     }
 
@@ -53,6 +58,6 @@ public class Order extends Observable {
 //        setChanged(); // 状态改变必须调用
 //        notifyObservers(/*state*/);
         // 事件方式
-        ApplicationContext.publishEvent(new ApplicationEvent(this));
+//        ApplicationContext.publishEvent(new ApplicationEvent(this));
     }
 }

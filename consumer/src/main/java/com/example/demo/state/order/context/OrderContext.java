@@ -3,11 +3,11 @@ package com.example.demo.state.order.context;
 import com.alibaba.ttl.TransmittableThreadLocal;
 import com.example.demo.state.order.*;
 import com.example.demo.state.order.client.observer.OrderObserver;
+import com.example.demo.state.order.client.observer.ProcessorObserver;
 import com.example.demo.state.order.domain.Order;
-import com.example.demo.state.order.state.OrderState;
+import com.example.demo.state.order.experiment.concurrent.Processor;
+import com.example.demo.state.order.state.OrderRequestState;
 import com.example.demo.state.order.state.OrderStatusEnum;
-
-import java.lang.ref.WeakReference;
 
 /**
  * . _________         .__   _____   __
@@ -26,15 +26,7 @@ import java.lang.ref.WeakReference;
  * @since 1.0
  */
 public class OrderContext implements ContextApi<Order> {
-    /**
-     * 3
-     */
-    private static final class Singleton {
-        private static final OrderContext INSTANCE = new OrderContext();
-    }
-    /**
-     * 2
-     */
+
     private static final TransmittableThreadLocal<OrderContext> THREAD_CONTEXT =
             new TransmittableThreadLocal<OrderContext>() {
                 @Override
@@ -42,20 +34,10 @@ public class OrderContext implements ContextApi<Order> {
                     return new OrderContext();
                 }
             };
-    /**
-     * 1
-     */
-    private static final TransmittableThreadLocal<WeakReference<OrderContext>> WEAK_CONTEXT =
-            new TransmittableThreadLocal<WeakReference<OrderContext>>() {
-                @Override
-                protected WeakReference<OrderContext> initialValue() {
-                    return new WeakReference<>(new OrderContext());
-                }
-            };
 
     private OrderContext() {
         // 初始化上下文
-        System.out.println(Thread.currentThread() + " --- OrderContext is created! --- " + this.hashCode());
+        System.out.println(Thread.currentThread() + " --- OrderContext <" + this.hashCode() + "> is created! --- ");
         // 创建状态集
         this.orderCreate = OrderStatusEnum.CREATE.getState();
         this.orderFinish = OrderStatusEnum.FINISH.getState();
@@ -64,6 +46,7 @@ public class OrderContext implements ContextApi<Order> {
         this.logisticsCreate = OrderStatusEnum.LOGISTICS.getState();
         // 开始监听
         OrderObserver.listen();
+        ProcessorObserver.listen();
     }
 
     @Override
@@ -73,61 +56,41 @@ public class OrderContext implements ContextApi<Order> {
         System.out.println("Context is disposed!");
     }
 
-    public static OrderContext getInstance() {
-        return Singleton.INSTANCE;
-    }
-
     public static OrderContext getThreadContext() {
+        OrderContext orderDomain = THREAD_CONTEXT.get();
+        return orderDomain;
+    }
+
+    public static OrderContext getThreadContext(Order domain) {
+//        RequestAsyncProcessService asyncProcessor = RequestAsyncProcessServiceImpl.getInstance();
+//        Processor processor = asyncProcessor.getProcessor(domain.getId());
+//        OrderContext orderDomain = processor.getOrderContext();
+//        orderDomain.setDomain(domain);
         return THREAD_CONTEXT.get();
-    }
-
-    public static OrderContext getWeakContext() {
-        return WEAK_CONTEXT.get().get();
-    }
-
-    public static void restoreContext(OrderContext oldContext) {
-        THREAD_CONTEXT.set(oldContext);
-        WEAK_CONTEXT.set(new WeakReference<>(oldContext));
     }
 
     private static void removeContext() {
         System.out.println("removeContext");
         THREAD_CONTEXT.remove();
-        WEAK_CONTEXT.remove();
     }
 
     // ************************************** 基础属性区
 
     private Order domain;
 
-    @Override
-    public ContextApi<Order> of(Order domain) {
-        if (domain.getState() == null || domain.getState() == 0) {
-            // 设置初始状态
-            this.state = this.orderCreate;
-            domain.setState(this.orderCreate.getStateValue());
-//        db.insert(domain);
-            System.out.println(this + " - " + "订单已创建 " + domain);
-        } else {
-            this.state = OrderStatusEnum.get(domain.getState());
-        }
-        setDomain(domain);
-        return this;
-    }
-
     /**
      * 状态 持有一个State类型的对象实例
      */
-    private OrderState state;
+    private OrderRequestState state;
 
     /**
      * 状态 定义出所有状态
      */
-    private final OrderState orderCreate;
-    private final OrderState orderFinish;
-    private final OrderState orderCancel;
-    private final OrderState payCreate;
-    private final OrderState logisticsCreate;
+    private final OrderRequestState orderCreate;
+    private final OrderRequestState orderFinish;
+    private final OrderRequestState orderCancel;
+    private final OrderRequestState payCreate;
+    private final OrderRequestState logisticsCreate;
 
     /**
      * 策略 持有一个Strategy类型的对象实例
@@ -136,24 +99,9 @@ public class OrderContext implements ContextApi<Order> {
 
     // *************************** 基础方法区
 
-    public OrderState getOrderCreate() {
-        return orderCreate;
-    }
-
-    public OrderState getOrderFinish() {
-        return orderFinish;
-    }
-
-    public OrderState getOrderCancel() {
-        return orderCancel;
-    }
-
-    public OrderState getPayCreate() {
-        return payCreate;
-    }
-
-    public OrderState getLogisticsCreate() {
-        return logisticsCreate;
+    @Override
+    public Long getDomainId() {
+        return getDomain().getId();
     }
 
     @Override
@@ -162,24 +110,37 @@ public class OrderContext implements ContextApi<Order> {
     }
 
     @Override
-    public Long getDomainId() {
-        return domain.getId();
-    }
+    public ContextApi<Order> setDomain(Order domain) {
+//        if (domain.getState() == null || domain.getState() == 0) {
+//            LOCAL_STATE.set(OrderStatusEnum.CREATE.getState());
+//            domain.setState(OrderStatusEnum.CREATE.getState().getStateValue());
+//            System.out.println("<" + this + "> - " + "订单已创建 " + domain);
+//        } else {
+//            LOCAL_STATE.set(OrderStatusEnum.get(domain.getState()));
+//        }
+//        LOCAL_DOMAIN.set(domain);
 
-    @Override
-    public ContextApi setDomain(Order domain) {
+        if (domain.getState() == null || domain.getState() == 0) {
+            // 设置初始状态
+            this.state = this.orderCreate;
+            domain.setState(this.orderCreate.getStateValue());
+//        db.insert(domain);
+            System.out.println("<" + this + "> - " + "订单已创建 " + domain);
+        } else {
+            this.state = OrderStatusEnum.get(domain.getState());
+        }
         this.domain = domain;
         return this;
     }
 
     @Override
-    public StateApi getState() {
+    public RequestState getState() {
         return state;
     }
 
     @Override
-    public ContextApi setState(StateApi state) {
-        this.state = (OrderState) state;
+    public ContextApi setState(RequestState state) {
+        this.state = (OrderRequestState) state;
         return this;
     }
 
@@ -199,6 +160,27 @@ public class OrderContext implements ContextApi<Order> {
         return this.hashCode() + "";
     }
 
+
+    public OrderRequestState getOrderCreate() {
+        return orderCreate;
+    }
+
+    public OrderRequestState getOrderFinish() {
+        return orderFinish;
+    }
+
+    public OrderRequestState getOrderCancel() {
+        return orderCancel;
+    }
+
+    public OrderRequestState getPayCreate() {
+        return payCreate;
+    }
+
+    public OrderRequestState getLogisticsCreate() {
+        return logisticsCreate;
+    }
+
     // *************************** 业务方法区
 
     /**
@@ -215,22 +197,8 @@ public class OrderContext implements ContextApi<Order> {
         strategy.process(order);
     }
 
-    public void update(Order order) {
-        state.update(order);
-    }
-
-    public void reverse(Order order) {
-        state.reverse(order);
-    }
-
-    public void next(Order order) {
-        state.next(order);
-    }
-
-    private final RequestAsyncProcessService asyncProcessor = new OrderRequestAsyncProcessServiceImpl();
-
     @Override
     public RequestAsyncProcessService getAsyncProcessor() {
-        return asyncProcessor;
+        return RequestAsyncProcessServiceImpl.getInstance();
     }
 }

@@ -3,7 +3,8 @@ package com.example.demo.state.order.experiment.strategy;
 import com.example.demo.state.order.*;
 import com.example.demo.state.order.context.OrderContext;
 import com.example.demo.state.order.domain.Order;
-import com.example.demo.state.order.state.OrderState;
+import com.example.demo.state.order.state.OrderRequestState;
+import com.example.demo.state.order.state.OrderStatusEnum;
 
 /**
  * . _________         .__   _____   __
@@ -31,7 +32,7 @@ public class OrderCancelStrategy implements Strategy<Order> {
 
     @Override
     public void process(Order order) {
-        OrderState state = context.getOrderCancel();
+        OrderRequestState state = OrderStatusEnum.CANCLE.getState();
         state.reverse(order);
         state.next(order);
         state.log(order);

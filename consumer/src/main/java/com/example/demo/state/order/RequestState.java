@@ -16,7 +16,7 @@ package com.example.demo.state.order;
  * @see Object
  * @since 1.0
  */
-public interface StateApi<T> {
+public interface RequestState<T> {
 
     /**
      * 获取当前状态
@@ -26,18 +26,23 @@ public interface StateApi<T> {
     int getStateValue();
 
     /**
+     * 获取当前状态描述
+     */
+    String getDesc();
+
+    /**
      * 设置状态
      *
      * @param value 1 Create 2 Finish 3 Return
      */
-    void setStateValue(int value);
+//    void setStateValue(int value);
 
     /**
      * 获取上下文
      *
      * @return 上下文
      */
-    ContextApi<T> getContext();
+    ContextApi<T> getContext(T domain);
 
     /**
      * 下推
@@ -53,5 +58,7 @@ public interface StateApi<T> {
      * 获取业务主键
      */
     Long getDomainId();
+
+//    T getDomain();
 
 }

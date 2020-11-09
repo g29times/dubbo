@@ -1,6 +1,6 @@
 package com.example.demo.state.order.state;
 
-import com.example.demo.state.order.StateApi;
+import com.example.demo.state.order.RequestState;
 import com.example.demo.state.order.domain.Order;
 import com.example.demo.state.order.experiment.processor.AbstractProcessor;
 
@@ -20,19 +20,20 @@ import com.example.demo.state.order.experiment.processor.AbstractProcessor;
  * @see Object
  * @since 1.0
  */
-public class OrderCreateState extends AbstractProcessor<Order> implements OrderState {
+public class OrderCreateRequestState extends AbstractProcessor<Order> implements OrderRequestState {
 
-    private int value = 11;
+    private final int value = 11;
+
+    private final String desc = "已创建";
 
 //    private OrderContext context;
-
-    public OrderCreateState() {
-    }
-
 //    public OrderCreateState(ContextApi<Order> context) {
 //        this.context = (OrderContext) context;
 //        this.context.setState(this);
 //    }
+
+    public OrderCreateRequestState() {
+    }
 
     @Override
     public int getStateValue() {
@@ -40,40 +41,43 @@ public class OrderCreateState extends AbstractProcessor<Order> implements OrderS
     }
 
     @Override
-    public void setStateValue(int value) {
-        this.value = value;
+    public String getDesc() {
+        return desc;
     }
 
     @Override
     public String toString() {
-        return getStateValue() + "";
+        return "OrderCreateState{" +
+                "value=" + value +
+                ", desc='" + desc + '\'' +
+                '}';
     }
 
     @Override
     public void update(Order order) {
-        getContext().setState(this);
-        System.out.println(getContext() + " - " + order + " -> 创建订单");
+        getContext(order).setState(this);
+        System.out.println(getContext(order) + " - " + order + " -> 创建订单");
         order.setState(value);
     }
 
     @Override
     public void reverse(Order order) {
-        StateApi<Order> reverse = getContext().getOrderCancel();
-        getContext().setState(reverse);
-        System.out.println(getContext() + " - " + order + " -> 取消订单");
+        RequestState<Order> reverse = OrderStatusEnum.CANCLE.getState();
+        getContext(order).setState(reverse);
+        System.out.println(getContext(order) + " - " + order + " -> 取消订单");
         order.setState(reverse.getStateValue());
     }
 
     @Override
-    public void next(Order order) {
+    public /*synchronized*/ void next(Order order) {
         // TODO 这里考虑配置化
         // V1 写死：context.getPayCreate();
         // V2 查库(或配置)获得：context.getNext();
         // V3 通过服务调用结果判断走哪个分支
-        StateApi<Order> next = getContext().getPayCreate();
-        getContext().setState(next);
-        System.out.println("[" + Thread.currentThread().getName() + "]" +
-                "[Context]" + getContext() + "[Order]" + order + "-> 订单下发到支付");
+        RequestState<Order> next = OrderStatusEnum.PAY.getState();
+        getContext(order).setState(next);
+        System.out.println(System.currentTimeMillis() + " [" + Thread.currentThread().getName() + "]" +
+                " <" + getContext(order) + "> " + order + " -> 订单下发到支付");
         // 仅模拟，实际是调用oms接口保存实体状态
         order.setState(next.getStateValue());
     }
@@ -83,6 +87,7 @@ public class OrderCreateState extends AbstractProcessor<Order> implements OrderS
      */
     @Override
     public void process(Order order) {
+        // 1 验证 - 2 处理 - 3 变更状态 - 4 通知
         next(order);
     }
 

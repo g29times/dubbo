@@ -1,6 +1,7 @@
 package com.example.demo.state.order.client.observer;
 
 import com.example.demo.state.order.client.down.PayServiceApi;
+import com.example.demo.state.order.context.OrderContext;
 import com.example.demo.state.order.domain.Bill;
 import com.example.demo.state.order.domain.Order;
 
@@ -53,8 +54,10 @@ public class OrderObserver implements Observer {
      */
     public static void listen() {
         ApplicationContext.addListener(event -> {
-            Order source = (Order) event.getSource();
-            System.out.println("已更新订单状态：" + source);
+            if(event.getSource() instanceof Order) {
+                Order order = (Order) event.getSource();
+                System.out.println(System.currentTimeMillis() + " 监听到：已更新订单状态" + order);
+            }
         });
     }
 

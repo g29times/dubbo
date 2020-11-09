@@ -1,9 +1,8 @@
 package com.example.demo.state.order.experiment.concurrent;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import com.example.demo.state.order.domain.Order;
+
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
@@ -35,13 +34,14 @@ public class ProcessorPool {
             ArrayBlockingQueue queue = new ArrayBlockingQueue<>(100);
             Processor thread = new Processor(queue);
             queues.addQueue(queue);
-            pool.submit(thread);
-//            futures.add(pool.submit(thread));
+            // TODO future待定
+            Future<Order> future = pool.submit(thread);
+//            thread.setResult(future);
         }
     }
 
     public static void start() {
-        System.out.println("POOL STARTED " + getInstance());
+        getInstance();
     }
 
     public void stop() {
