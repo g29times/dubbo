@@ -1,7 +1,6 @@
 package com.example.demo.state.order.state;
 
-import com.example.demo.state.order.RequestState;
-import com.example.demo.state.order.context.OrderContext;
+import com.example.demo.state.order.StateRequest;
 import com.example.demo.state.order.domain.Order;
 
 /**
@@ -20,17 +19,11 @@ import com.example.demo.state.order.domain.Order;
  * @see Object
  * @since 1.0
  */
-public interface OrderRequestState extends RequestState<Order> {
-
-    @Override
-    default OrderContext getContext(Order order) {
-        return OrderContext.getThreadContext(order);
-    }
+public interface OrderStateRequest extends StateRequest<Order> {
 
     @Override
     default Long getDomainId() {
-
-        return OrderContext.getThreadContext().getDomainId();
+        return getContext().getDomainId();
     }
 
     /**
@@ -47,6 +40,6 @@ public interface OrderRequestState extends RequestState<Order> {
      * 操作日志（快照）
      */
     default void log(Order order) {
-        System.out.println(getContext(order) + " - " + order + " 操作日志已记录。");
+        System.out.println(getContext() + " - " + order + " 操作日志已记录。");
     }
 }

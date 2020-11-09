@@ -16,7 +16,7 @@ package com.example.demo.state.order;
  * @see Object
  * @since 1.0
  */
-public interface RequestState<T> {
+public interface StateRequest<T> {
 
     /**
      * 获取当前状态
@@ -42,7 +42,9 @@ public interface RequestState<T> {
      *
      * @return 上下文
      */
-    ContextApi<T> getContext(T domain);
+    ContextApi<T> getContext();
+
+    void setContext(ContextApi<T> context);
 
     /**
      * 下推

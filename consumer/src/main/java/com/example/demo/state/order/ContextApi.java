@@ -114,7 +114,7 @@ public interface ContextApi<T> {
      *
      * @return 状态
      */
-    RequestState<T> getState();
+    StateRequest<T> getState();
 
     /**
      * 设定状态
@@ -122,7 +122,7 @@ public interface ContextApi<T> {
      * @param state 状态
      * @return 上下文
      */
-    ContextApi<T> setState(RequestState<T> state);
+    ContextApi<T> setState(StateRequest<T> state);
 
     /**
      * 查询流程策略

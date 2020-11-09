@@ -1,7 +1,9 @@
 package com.example.demo.state.order.state;
 
-import com.example.demo.state.order.RequestState;
+import com.example.demo.state.order.ContextApi;
+import com.example.demo.state.order.StateRequest;
 import com.example.demo.state.order.client.down.PayServiceApi;
+import com.example.demo.state.order.context.OrderContext;
 import com.example.demo.state.order.domain.Bill;
 import com.example.demo.state.order.domain.Order;
 import com.example.demo.state.order.experiment.processor.AbstractProcessor;
@@ -22,13 +24,22 @@ import com.example.demo.state.order.experiment.processor.AbstractProcessor;
  * @see Object
  * @since 1.0
  */
-public class PayCreate extends AbstractProcessor<Order> implements OrderRequestState {
+public class PayCreate extends AbstractProcessor<Order> implements OrderStateRequest {
 
     private final int value = 21;
 
     private final String desc = "已支付";
 
-    public PayCreate() {
+    private OrderContext context;
+
+    @Override
+    public OrderContext getContext() {
+        return context;
+    }
+
+    @Override
+    public void setContext(ContextApi<Order> context) {
+        this.context = (OrderContext)context;
     }
 
     @Override
@@ -51,17 +62,17 @@ public class PayCreate extends AbstractProcessor<Order> implements OrderRequestS
 
     @Override
     public void update(Order order) {
-        getContext(order).setState(this);
-        System.out.println(getContext(order) + " - " + order + " -> 创建支付单");
+        getContext().setState(this);
+        System.out.println(getContext() + " - " + order + " -> 创建支付单");
         order.setState(value);
     }
 
     @Override
     public void reverse(Order order) {
-        RequestState<Order> prev = OrderStatusEnum.CANCLE.getState();
-        getContext(order).setState(prev);
+        StateRequest<Order> prev = OrderStatusEnum.CANCLE.getState();
+        getContext().setState(prev);
         System.out.println(System.currentTimeMillis() + " [" + Thread.currentThread().getName() + "]" +
-                " <" + getContext(order) + "> " + order + " -> 支付取消");
+                " <" + getContext() + "> " + order + " -> 支付取消");
         order.setState(prev.getStateValue());
     }
 
@@ -75,12 +86,12 @@ public class PayCreate extends AbstractProcessor<Order> implements OrderRequestS
             System.out.println("支付状态跳号 无法继续！期望值：" + OrderStatusEnum.PAY.getState() + "，实际值：" + order.getState());
             return;
         }
-        // 模拟调用支付系统 状态分支
+        // TODO 模拟调用支付系统 状态分支
         if (new PayServiceApi().addOrUpdate(new Bill())) {
-            RequestState<Order> next = OrderStatusEnum.LOGISTICS.getState();
-            getContext(order).setState(next);
+            StateRequest<Order> next = OrderStatusEnum.LOGISTICS.getState();
+            getContext().setState(next);
             System.out.println(System.currentTimeMillis() + " [" + Thread.currentThread().getName() + "]" +
-                    " <" + getContext(order) + "> " + order + " 支付单下发到 -> 储运");
+                    " <" + getContext() + "> " + order + " 已支付 -> 运送中");
             order.setState(next.getStateValue());
         } else {
             reverse(order);

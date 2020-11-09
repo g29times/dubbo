@@ -2,7 +2,7 @@ package com.example.demo.state.order;
 
 import com.example.demo.state.order.experiment.concurrent.Processor;
 import com.example.demo.state.order.experiment.concurrent.RequestQueue;
-import com.example.demo.state.order.state.OrderRequestState;
+import com.example.demo.state.order.state.OrderStateRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -31,20 +31,20 @@ public class RequestAsyncProcessServiceImpl implements RequestAsyncProcessServic
 
     @Override
     public Processor getProcessor(Long productId) {
-        BlockingQueue<RequestState> routingQueue = getRoutingQueue(productId);
+        BlockingQueue<StateRequest> routingQueue = getRoutingQueue(productId);
         return map.get(routingQueue);
     }
 
     @Override
-    public void process(RequestState stateRequest) {
-        OrderRequestState state = (OrderRequestState) stateRequest;
+    public void process(StateRequest stateRequest) {
+        OrderStateRequest request = (OrderStateRequest) stateRequest;
         try {
             // 先做读请求的去重
             if (preCheckDup(stateRequest)) {
                 return;
             }
             // 1 做请求的路由，根据每个请求的商品id，路由到对应的内存队列中去
-            BlockingQueue<RequestState> queue = getRoutingQueue(state.getDomainId());
+            BlockingQueue<StateRequest> queue = getRoutingQueue(request.getDomainId());
             // 2 将请求放入对应的队列中，完成路由操作
             queue.put(stateRequest);
         } catch (Exception e) {
@@ -55,8 +55,8 @@ public class RequestAsyncProcessServiceImpl implements RequestAsyncProcessServic
     /**
      * 设计精华 读请求的去重
      */
-    private boolean preCheckDup(RequestState request) {
-        OrderRequestState state = (OrderRequestState) request;
+    private boolean preCheckDup(StateRequest request) {
+        OrderStateRequest state = (OrderStateRequest) request;
         RequestQueue requestQueue = RequestQueue.getInstance();
         Map<Long, Boolean> flagMap = requestQueue.getFlagMap();
         // TODO
@@ -89,7 +89,7 @@ public class RequestAsyncProcessServiceImpl implements RequestAsyncProcessServic
      * @param productId 商品id
      * @return 内存队列
      */
-    private BlockingQueue<RequestState> getRoutingQueue(Long productId) {
+    private BlockingQueue<StateRequest> getRoutingQueue(Long productId) {
         RequestQueue requestQueue = RequestQueue.getInstance();
 
         // 先获取productId的hash值
@@ -112,7 +112,6 @@ public class RequestAsyncProcessServiceImpl implements RequestAsyncProcessServic
     }
 
     private static class Singleton {
-        private static final RequestAsyncProcessServiceImpl INSTANCE =
-                new RequestAsyncProcessServiceImpl();
+        private static final RequestAsyncProcessServiceImpl INSTANCE = new RequestAsyncProcessServiceImpl();
     }
 }

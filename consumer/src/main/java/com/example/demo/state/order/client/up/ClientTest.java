@@ -5,7 +5,7 @@ import com.example.demo.state.demo.ConcreteStateB;
 import com.example.demo.state.demo.Context;
 import com.example.demo.state.demo.State;
 import com.example.demo.state.order.ContextApi;
-import com.example.demo.state.order.RequestState;
+import com.example.demo.state.order.StateRequest;
 import com.example.demo.state.order.Strategy;
 import com.example.demo.state.order.context.OrderContext;
 import com.example.demo.state.order.domain.Order;
@@ -13,9 +13,9 @@ import com.example.demo.state.order.experiment.concurrent.ProcessorPool;
 import com.example.demo.state.order.experiment.processor.OrderProcessorBuilder;
 import com.example.demo.state.order.experiment.strategy.OrderCancelStrategy;
 import com.example.demo.state.order.experiment.strategy.OrderCreateStrategy;
-import com.example.demo.state.order.state.OrderCancelRequestState;
-import com.example.demo.state.order.state.OrderCreateRequestState;
-import com.example.demo.state.order.state.OrderRequestState;
+import com.example.demo.state.order.state.OrderCancelStateRequest;
+import com.example.demo.state.order.state.OrderCreateStateRequest;
+import com.example.demo.state.order.state.OrderStateRequest;
 import com.example.demo.state.order.state.OrderStatusEnum;
 
 import java.util.HashMap;
@@ -120,19 +120,46 @@ public class ClientTest {
     private static void orderV4() {
         ProcessorPool.start();
 
-        Order order = new Order();
-        order.setId(1234L);
-        // TODO 1 验证 状态跳号 (数据库) 2 幂等
-        order.setState(OrderStatusEnum.PAY.getCode());
+//        Order order1 = new Order();
+//        order1.setId(123L);
+//        // TODO 1 验证 状态跳号 (数据库) 2 幂等
+//        order1.setState(OrderStatusEnum.PAY.getCode());
+//        new OrderContext(order1/* -> request*/).process();
 
-        /*order = */OrderContext.getThreadContext(order)/*.setDomain(order)*/.process()/*.getDomain()*/;
+        Order order2 = new Order();
+        order2.setId(124L);
+        new OrderContext(order2).process();
+
+//        /*order = */OrderContext.getThreadContext(order)/*.setDomain(order)*/.process()/*.getDomain()*/;
 //        System.out.println(order);
 //        OrderContext.getInstance().setDomain(order).next().next()/*.fork(orderContext::next)*/.getDomain();
         try {
-            Thread.sleep(100L);
+            Thread.sleep(2000L);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        new OrderContext(order2).process();
+        try {
+            Thread.sleep(2000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        new OrderContext(order2).process();
+        try {
+            Thread.sleep(2000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        new OrderContext(order2).process();
+        try {
+            Thread.sleep(2000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
 //        OrderContext.getInstance().peek();
 //        OrderContext.getInstance().setDomain(order).process();
 //        ProcessorPool.stop();
@@ -157,7 +184,7 @@ public class ClientTest {
         public static void process(Order order) {
             // TODO 需配置化
             OrderContext context = OrderContext.getThreadContext(order);
-            OrderRequestState create = context.getOrderCreate();
+            OrderStateRequest create = context.getOrderCreate();
             create.update(order);
 //        db.insert(order);
             create.next(order);
@@ -180,14 +207,14 @@ public class ClientTest {
         Order order = new Order();
         ContextApi<Order> orderFlow = OrderContext.getThreadContext(order);
 
-        RequestState<Order> create = new OrderCreateRequestState(/*orderFlow*/);
+        StateRequest<Order> create = new OrderCreateStateRequest(/*orderFlow*/);
         orderFlow.setState(create);
         Strategy<Order> createStrategy = new OrderCreateStrategy(orderFlow);
         orderFlow.setStrategy(createStrategy);
         orderFlow.request(order);
         System.out.println();
 
-        RequestState<Order> reverse = new OrderCancelRequestState(orderFlow);
+        StateRequest<Order> reverse = new OrderCancelStateRequest();
         orderFlow.setState(reverse);
         Strategy<Order> reverseStrategy = new OrderCancelStrategy(orderFlow);
         orderFlow.setStrategy(reverseStrategy);

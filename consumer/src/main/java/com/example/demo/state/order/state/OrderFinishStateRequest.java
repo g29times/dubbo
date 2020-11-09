@@ -15,25 +15,27 @@ import com.example.demo.state.order.context.OrderContext;
  * <a href="www.google.com">google</a>
  *
  * @author li tong
- * @description: 取消订单
- * @date 2020/10/14 18:09
+ * @description: 完成订单
+ * @date 2020/10/14 18:06
  * @see Object
  * @since 1.0
  */
-public class OrderCancelRequestState implements OrderRequestState {
+public class OrderFinishStateRequest implements OrderStateRequest {
 
-    private int value = 10;
+    private int value = 13;
 
-    private final String desc = "已取消";
+    private final String desc = "已完成";
 
     private OrderContext context;
 
-    public OrderCancelRequestState() {
+    @Override
+    public OrderContext getContext() {
+        return context;
     }
 
-    public OrderCancelRequestState(ContextApi<Order> context) {
-        this.context = (OrderContext) context;
-        this.context.setState(this);
+    @Override
+    public void setContext(ContextApi<Order> context) {
+        this.context = (OrderContext)context;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class OrderCancelRequestState implements OrderRequestState {
 
     @Override
     public String toString() {
-        return "OrderCancelState{" +
+        return "OrderFinishState{" +
                 "value=" + value +
                 ", desc='" + desc + '\'' +
                 '}';
@@ -66,7 +68,8 @@ public class OrderCancelRequestState implements OrderRequestState {
 
     @Override
     public void next(Order order) {
-
+        System.out.println(System.currentTimeMillis() + " [" + Thread.currentThread().getName() + "]" +
+                " <" + getContext() + "> " + order + " 已完成 没有后续节点");
     }
 
     @Override

@@ -12,7 +12,7 @@ import java.util.concurrent.BlockingQueue;
  */
 public interface RequestAsyncProcessService {
 
-    void process(RequestState stateRequest);
+    void process(StateRequest stateRequest);
 
     void put(BlockingQueue key, Processor value);
 

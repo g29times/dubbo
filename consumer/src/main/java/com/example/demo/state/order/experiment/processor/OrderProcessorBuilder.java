@@ -2,7 +2,7 @@ package com.example.demo.state.order.experiment.processor;
 
 import com.example.demo.state.order.domain.Order;
 import com.example.demo.state.order.state.LogisticsCreate;
-import com.example.demo.state.order.state.OrderCreateRequestState;
+import com.example.demo.state.order.state.OrderCreateStateRequest;
 import com.example.demo.state.order.state.PayCreate;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +27,7 @@ public class OrderProcessorBuilder extends AbstractProcessorBuilder<Order> {
 
     @Override
     public OrderProcessorBuilder initProcessor() {
-        addLast(new OrderCreateRequestState());
+        addLast(new OrderCreateStateRequest());
         addLast(new PayCreate());
         addLast(new LogisticsCreate());
         return this;
