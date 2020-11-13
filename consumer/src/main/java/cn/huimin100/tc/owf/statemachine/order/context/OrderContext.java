@@ -8,7 +8,13 @@ import cn.huimin100.tc.owf.statemachine.order.async.RequestAsyncProcessServiceIm
 import cn.huimin100.tc.owf.statemachine.order.async.observer.OrderObserver;
 import cn.huimin100.tc.owf.statemachine.order.async.observer.ProcessorObserver;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
-import cn.huimin100.tc.owf.statemachine.order.state.*;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
+import cn.huimin100.tc.owf.statemachine.order.state.logistics.LogisticsPick;
+import cn.huimin100.tc.owf.statemachine.order.state.order.OrderCancel;
+import cn.huimin100.tc.owf.statemachine.order.state.order.OrderCreate;
+import cn.huimin100.tc.owf.statemachine.order.state.order.OrderFinish;
+import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
+import cn.huimin100.tc.owf.statemachine.order.state.pay.PayWaiting;
 import com.alibaba.ttl.TransmittableThreadLocal;
 
 /**
@@ -41,11 +47,11 @@ public class OrderContext implements ContextApi<Order> {
         // 初始化上下文
         System.out.println(Thread.currentThread() + " --- OrderContext <" + this.hashCode() + "> is created! --- ");
         // 创建状态集
-        this.orderCreate = new OrderCreateStateRequest();
-        this.orderFinish = new OrderFinishStateRequest();
-        this.orderCancel = new OrderCancelStateRequest();
-        this.payCreate = new PayCreate();
-        this.logisticsCreate = new LogisticsCreate();
+        this.orderCreate = new OrderCreate();
+        this.orderFinish = new OrderFinish();
+        this.orderCancel = new OrderCancel();
+        this.payCreate = new PayWaiting();
+        this.logisticsCreate = new LogisticsPick();
         // 开始监听
         OrderObserver.listen();
         ProcessorObserver.listen();
@@ -55,11 +61,11 @@ public class OrderContext implements ContextApi<Order> {
         // 初始化上下文
         System.out.println(Thread.currentThread() + " --- OrderContext <" + this.hashCode() + "> is created! --- ");
         // 创建状态集
-        this.orderCreate = new OrderCreateStateRequest();
-        this.orderFinish = new OrderFinishStateRequest();
-        this.orderCancel = new OrderCancelStateRequest();
-        this.payCreate = new PayCreate();
-        this.logisticsCreate = new LogisticsCreate();
+        this.orderCreate = new OrderCreate();
+        this.orderFinish = new OrderFinish();
+        this.orderCancel = new OrderCancel();
+        this.payCreate = new PayWaiting();
+        this.logisticsCreate = new LogisticsPick();
         // 开始监听
         OrderObserver.listen();
         ProcessorObserver.listen();
@@ -150,8 +156,10 @@ public class OrderContext implements ContextApi<Order> {
     }
 
     private void setState(Order domain) {
+	    // 默认为订单状态
+        domain.setStateType(1);
+        // 刚创建 设置初始状态
         if (domain.getState() == null || domain.getState() == 0) {
-            // 设置初始状态
             this.state = this.orderCreate;
             this.state.setContext(this);
             domain.setState(this.orderCreate.getStateValue());

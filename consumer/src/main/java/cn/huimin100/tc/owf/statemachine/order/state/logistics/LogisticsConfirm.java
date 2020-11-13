@@ -1,8 +1,11 @@
-package cn.huimin100.tc.owf.statemachine.order.state;
+package cn.huimin100.tc.owf.statemachine.order.state.logistics;
 
 import cn.huimin100.tc.owf.statemachine.order.ContextApi;
 import cn.huimin100.tc.owf.statemachine.order.context.OrderContext;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
+import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.LogisticsStatusEnum;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
 
 /**
  * . _________         .__   _____   __
@@ -15,16 +18,16 @@ import cn.huimin100.tc.owf.statemachine.order.domain.Order;
  * <a href="www.google.com">google</a>
  *
  * @author li tong
- * @description: 取消订单
+ * @description: 仓配确认送达
  * @date 2020/10/14 18:09
  * @see Object
  * @since 1.0
  */
-public class OrderCancelStateRequest implements OrderStateRequest {
+public class LogisticsConfirm implements OrderStateRequest {
 
-    private int value = 10;
+    private final int value = 36;
 
-    private final String desc = "已取消";
+    private final String desc = "仓配确认送达";
 
     private OrderContext context;
 
@@ -50,7 +53,7 @@ public class OrderCancelStateRequest implements OrderStateRequest {
 
     @Override
     public String toString() {
-        return "OrderCancelState{" +
+        return "LogisticsState{" +
                 "value=" + value +
                 ", desc='" + desc + '\'' +
                 '}';

@@ -1,6 +1,9 @@
 package cn.huimin100.tc.owf.statemachine.order.domain;
 
-import cn.huimin100.tc.owf.statemachine.order.state.OrderStatusEnum;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.LogisticsStatusEnum;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.StateTypeEnum;
 
 import java.util.Observable;
 
@@ -29,13 +32,29 @@ public class Order extends Observable {
      */
     private int state;
 
+    /**
+     * 状态类型
+     */
+    private int stateType;
+
     @Override
     public String toString() {
-        return "Order{" +
-                "id=" + id +
-                ", state=" + state +
-                ", desc=" + OrderStatusEnum.get(state).getStateDesc() +
-                '}';
+        String order = "";
+        try {
+            order = "Order{" +
+                    "id=" + id +
+                    ", state=" + state +
+                    ", type=" + StateTypeEnum.get(stateType) +
+                    ", desc=" + (
+                    stateType == 1 ? OrderStatusEnum.get(state).getStateDesc() :
+                            stateType == 2 ? PayStatusEnum.get(state).getStateDesc() :
+                                    LogisticsStatusEnum.get(state).getStateDesc()
+            ) +
+                    '}';
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return order;
     }
 
     public Long getId() {
@@ -57,5 +76,13 @@ public class Order extends Observable {
 //        notifyObservers(/*state*/);
         // 事件方式
 //        ApplicationContext.publishEvent(new ApplicationEvent(this));
+    }
+
+    public int getStateType() {
+        return stateType;
+    }
+
+    public void setStateType(int stateType) {
+        this.stateType = stateType;
     }
 }

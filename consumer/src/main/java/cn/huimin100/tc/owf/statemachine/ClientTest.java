@@ -13,8 +13,8 @@ import cn.huimin100.tc.owf.statemachine.demo.State;
 import cn.huimin100.tc.owf.statemachine.order.context.OrderContext;
 import cn.huimin100.tc.owf.statemachine.order.experiment.processor.OrderProcessorBuilder;
 import cn.huimin100.tc.owf.statemachine.order.experiment.strategy.OrderCancelRequest;
-import cn.huimin100.tc.owf.statemachine.order.state.OrderCancelStateRequest;
-import cn.huimin100.tc.owf.statemachine.order.state.OrderCreateStateRequest;
+import cn.huimin100.tc.owf.statemachine.order.state.order.OrderCancel;
+import cn.huimin100.tc.owf.statemachine.order.state.order.OrderCreate;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
 
 import java.util.HashMap;
@@ -125,18 +125,18 @@ public class ClientTest {
 //        new OrderContext(order1/* -> request*/).process();
         Order order2 = new Order();
         order2.setId(124L);
-//        /*order = */OrderContext.getThreadContext(order)/*.setDomain(order)*/.process()/*.getDomain()*/;
-//        System.out.println(order);
-//        OrderContext.getInstance().setDomain(order).next().next()/*.fork(orderContext::next)*/.getDomain();
-        OrderContext order = new OrderContext(order2);
-        order = (OrderContext) order.process().getContext();
-        System.out.println("+++++++++++++++++++++++++" + order.getDomain());
+//        /*orderContext = */OrderContext.getThreadContext(orderContext)/*.setDomain(orderContext)*/.process()/*.getDomain()*/;
+//        System.out.println(orderContext);
+//        OrderContext.getInstance().setDomain(orderContext).next().next()/*.fork(orderContext::next)*/.getDomain();
+        OrderContext orderContext = new OrderContext(order2);
+        orderContext = (OrderContext) orderContext.process().getContext();
+        System.out.println("+++++++++++++++++++++++++" + orderContext.getDomain());
         try {
             Thread.sleep(1200L);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("+++++++++++++++++++++++++" + order.getState());
+        System.out.println("+++++++++++++++++++++++++" + orderContext.getState());
 
         new OrderContext(order2).process();
         try {
@@ -158,7 +158,7 @@ public class ClientTest {
         }
 
 //        OrderContext.getInstance().peek();
-//        OrderContext.getInstance().setDomain(order).process();
+//        OrderContext.getInstance().setDomain(orderContext).process();
 //        ProcessorPool.stop();
 //        System.gc();
     }
@@ -204,14 +204,14 @@ public class ClientTest {
         Order order = new Order();
         ContextApi<Order> orderFlow = OrderContext.getThreadContext(order);
 
-        StateRequest<Order> create = new OrderCreateStateRequest(/*orderFlow*/);
+        StateRequest<Order> create = new OrderCreate(/*orderFlow*/);
         orderFlow.setState(create);
         Request<Order> createRequest = new OrderCreateRequest(orderFlow);
         orderFlow.setStrategy(createRequest);
         orderFlow.request(order);
         System.out.println();
 
-        StateRequest<Order> reverse = new OrderCancelStateRequest();
+        StateRequest<Order> reverse = new OrderCancel();
         orderFlow.setState(reverse);
         Request<Order> reverseRequest = new OrderCancelRequest(orderFlow);
         orderFlow.setStrategy(reverseRequest);

@@ -4,7 +4,7 @@ import cn.huimin100.tc.owf.statemachine.order.ContextApi;
 import cn.huimin100.tc.owf.statemachine.order.Request;
 import cn.huimin100.tc.owf.statemachine.order.context.OrderContext;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
-import cn.huimin100.tc.owf.statemachine.order.state.OrderStatusEnum;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
 
 /**
@@ -33,7 +33,7 @@ public class OrderCancelRequest implements Request<Order> {
 
     @Override
     public void process(Order order) {
-        OrderStateRequest state = OrderStatusEnum.CANCLE.getState();
+        OrderStateRequest state = OrderStatusEnum.CANCEL.getState();
         state.reverse(order);
         state.next(order);
         state.log(order);

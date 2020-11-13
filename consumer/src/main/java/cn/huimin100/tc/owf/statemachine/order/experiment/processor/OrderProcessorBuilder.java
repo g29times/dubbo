@@ -1,9 +1,9 @@
 package cn.huimin100.tc.owf.statemachine.order.experiment.processor;
 
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
-import cn.huimin100.tc.owf.statemachine.order.state.PayCreate;
-import cn.huimin100.tc.owf.statemachine.order.state.LogisticsCreate;
-import cn.huimin100.tc.owf.statemachine.order.state.OrderCreateStateRequest;
+import cn.huimin100.tc.owf.statemachine.order.state.pay.PayWaiting;
+import cn.huimin100.tc.owf.statemachine.order.state.logistics.LogisticsPick;
+import cn.huimin100.tc.owf.statemachine.order.state.order.OrderCreate;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,9 +27,9 @@ public class OrderProcessorBuilder extends AbstractProcessorBuilder<Order> {
 
     @Override
     public OrderProcessorBuilder initProcessor() {
-        addLast(new OrderCreateStateRequest());
-        addLast(new PayCreate());
-        addLast(new LogisticsCreate());
+        addLast(new OrderCreate());
+        addLast(new PayWaiting());
+        addLast(new LogisticsPick());
         return this;
     }
 

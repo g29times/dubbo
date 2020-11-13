@@ -64,6 +64,7 @@ public class Processor implements Callable<Order> {
 				stateRequest.process(order);
 				Thread.sleep(500);
 
+				System.out.println(order);
 				ApplicationContext.publishEvent(new ApplicationEvent(order));
 			}
 		} catch (Exception e) {

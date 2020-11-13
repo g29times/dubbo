@@ -1,10 +1,11 @@
-package cn.huimin100.tc.owf.statemachine.order.state;
+package cn.huimin100.tc.owf.statemachine.order.state.logistics;
 
 import cn.huimin100.tc.owf.statemachine.order.ContextApi;
-import cn.huimin100.tc.owf.statemachine.order.StateRequest;
 import cn.huimin100.tc.owf.statemachine.order.context.OrderContext;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
-import cn.huimin100.tc.owf.statemachine.order.experiment.processor.AbstractProcessor;
+import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.LogisticsStatusEnum;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
 
 /**
  * . _________         .__   _____   __
@@ -17,16 +18,16 @@ import cn.huimin100.tc.owf.statemachine.order.experiment.processor.AbstractProce
  * <a href="www.google.com">google</a>
  *
  * @author li tong
- * @description: 储运已接单
- * @date 2020/10/21 17:19
+ * @description: 仓配已出库
+ * @date 2020/10/14 18:09
  * @see Object
  * @since 1.0
  */
-public class LogisticsCreate extends AbstractProcessor<Order> implements OrderStateRequest {
+public class LogisticsOutbound implements OrderStateRequest {
 
-    private int value = 31;
+    private final int value = 33;
 
-    private final String desc = "运送中";
+    private final String desc = "仓配已出库";
 
     private OrderContext context;
 
@@ -52,7 +53,7 @@ public class LogisticsCreate extends AbstractProcessor<Order> implements OrderSt
 
     @Override
     public String toString() {
-        return "LogisticsCreate{" +
+        return "LogisticsState{" +
                 "value=" + value +
                 ", desc='" + desc + '\'' +
                 '}';
@@ -60,27 +61,21 @@ public class LogisticsCreate extends AbstractProcessor<Order> implements OrderSt
 
     @Override
     public void update(Order order) {
-        getContext().setState(this);
-        System.out.println(getContext() + " - " + order + " -> 创建储运单");
-        order.setState(value);
+
     }
 
     @Override
     public void reverse(Order order) {
-        System.out.println("输运拦截");
+
     }
 
     @Override
     public void next(Order order) {
-        StateRequest<Order> next = OrderStatusEnum.FINISH.getState();
-        getContext().setState(next);
-        System.out.println(System.currentTimeMillis() + " [" + Thread.currentThread().getName() + "]" +
-                " <" + getContext() + "> " + order + " 运送中 -> 已送达（已完成）");
-        order.setState(next.getStateValue());
+
     }
 
     @Override
-    public void process(Order order) {
-        next(order);
+    public void process(Order domain) {
+        next(domain);
     }
 }
