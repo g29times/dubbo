@@ -13,6 +13,8 @@ import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.StateTypeEnum;
 
+import java.util.Map;
+
 /**
  * . _________         .__   _____   __
  * ./   _____/__  _  __|__|_/ ____\_/  |_
@@ -74,21 +76,27 @@ public class PayWaiting extends AbstractProcessor<Order> implements OrderStateRe
 
     @Override
     public void reverse(Order order) {
-        StateRequest<Order> prev = OrderStatusEnum.CANCEL.getState();
+        StateRequest<Order> prev = PayStatusEnum.CANCEL.getState();
         getContext().setState(prev);
         System.out.println(System.currentTimeMillis() + " [" + Thread.currentThread().getName() + "]" +
-                " <" + getContext() + "> " + order + " -> 支付取消");
-        order.setState(prev.getStateValue());
+                " <" + getContext() + "> "/* + order*/ + " -> 支付取消");
+
+        Map<Integer, StateRequest<Order>> map = order.getTypeState();
+        map.put(2, prev);
+        order.setTypeState(map);
+//        order.setState(prev.getStateValue());
     }
 
     @Override
     public void next(Order order) {
-        if (order.getState().equals(OrderStatusEnum.CANCEL.getState().getStateValue())) {
+        if (order.getTypeState() != null && order.getTypeState().get(1).getStateValue() == OrderStatusEnum.CANCEL.getState().getStateValue()
+                /*order.getState().equals(OrderStatusEnum.CANCEL.getState().getStateValue())*/) {
             System.out.println("支付已取消 无法继续！");
             return;
         }
-        if (!order.getState().equals(PayStatusEnum.WAITING.getState().getStateValue())) {
-            System.out.println("支付状态跳号 无法继续！期望值：" + PayStatusEnum.WAITING.getState() + "，实际值：" + order.getState());
+        if (order.getTypeState() != null && order.getTypeState().get(2).getStateValue() != PayStatusEnum.WAITING.getState().getStateValue()
+            /*!order.getState().equals(PayStatusEnum.WAITING.getState().getStateValue())*/) {
+            System.out.println("支付状态跳号 无法继续！期望值：" + PayStatusEnum.WAITING.getState() + "，实际值：" + order.getTypeState().get(2).getStateValue()/*order.getState()*/);
             return;
         }
         // TODO 模拟调用支付系统 状态分支
@@ -96,9 +104,13 @@ public class PayWaiting extends AbstractProcessor<Order> implements OrderStateRe
             StateRequest<Order> next = LogisticsStatusEnum.PICK.getState();
             getContext().setState(next);
             System.out.println(System.currentTimeMillis() + " [" + Thread.currentThread().getName() + "]" +
-                    " <" + getContext() + "> " + order + " 已支付 -> 运送中");
-            order.setState(next.getStateValue());
-            order.setStateType(StateTypeEnum.LOGISTICS.getCode());
+                    " <" + getContext() + "> " /*+ order */+ " 已支付 -> 运送中");
+
+            Map<Integer, StateRequest<Order>> map = order.getTypeState();
+            map.put(3, next);
+            order.setTypeState(map);
+//            order.setState(next.getStateValue());
+//            order.setStateType(StateTypeEnum.LOGISTICS.getCode());
         } else {
             reverse(order);
         }

@@ -10,6 +10,9 @@ import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.StateTypeEnum;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * . _________         .__   _____   __
  * ./   _____/__  _  __|__|_/ ____\_/  |_
@@ -71,10 +74,14 @@ public class OrderCreate extends AbstractProcessor<Order> implements OrderStateR
 
     @Override
     public void reverse(Order order) {
-        StateRequest<Order> reverse = OrderStatusEnum.CANCEL.getState();
-        getContext().setState(reverse);
+        StateRequest<Order> prev = OrderStatusEnum.CANCEL.getState();
+        getContext().setState(prev);
         System.out.println(getContext() + " - " + order + " -> 取消订单");
-        order.setState(reverse.getStateValue());
+
+        Map<Integer, StateRequest<Order>> map = order.getTypeState();
+        map.put(1, prev);
+        order.setTypeState(map);
+//        order.setState(prev.getStateValue());
     }
 
     @Override
@@ -87,10 +94,14 @@ public class OrderCreate extends AbstractProcessor<Order> implements OrderStateR
         OrderContext context = getContext();
         context.setState(next);
         System.out.println(System.currentTimeMillis() + " [" + Thread.currentThread().getName() + "]" +
-                " <" + context + "> " + order + " 已创建 -> 待支付");
+                " <" + context + "> "/* + order*/ + " 已创建 -> 待支付");
+
         // 仅模拟，实际是调用oms接口保存实体状态
-        order.setState(next.getStateValue());
-        order.setStateType(StateTypeEnum.PAY.getCode());
+        Map<Integer, StateRequest<Order>> map = order.getTypeState();
+        map.put(2, next);
+        order.setTypeState(map);
+//        order.setState(next.getStateValue());
+//        order.setStateType(StateTypeEnum.PAY.getCode());
     }
 
     /**

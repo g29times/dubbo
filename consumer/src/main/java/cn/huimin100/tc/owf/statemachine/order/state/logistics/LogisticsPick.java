@@ -10,6 +10,8 @@ import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.StateTypeEnum;
 
+import java.util.Map;
+
 /**
  * . _________         .__   _____   __
  * ./   _____/__  _  __|__|_/ ____\_/  |_
@@ -79,9 +81,13 @@ public class LogisticsPick extends AbstractProcessor<Order> implements OrderStat
         StateRequest<Order> next = OrderStatusEnum.FINISH.getState();
         getContext().setState(next);
         System.out.println(System.currentTimeMillis() + " [" + Thread.currentThread().getName() + "]" +
-                " <" + getContext() + "> " + order + " 已拣货 -> 已送达（已完成）");
-        order.setState(next.getStateValue());
-        order.setStateType(StateTypeEnum.ORDER.getCode());
+                " <" + getContext() + "> "/* + order*/ + " 已拣货 -> 已送达（已完成）");
+
+        Map<Integer, StateRequest<Order>> map = order.getTypeState();
+        map.put(1, next);
+        order.setTypeState(map);
+//        order.setState(next.getStateValue());
+//        order.setStateType(StateTypeEnum.ORDER.getCode());
     }
 
     @Override

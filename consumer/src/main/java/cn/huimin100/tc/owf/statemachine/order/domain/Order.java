@@ -1,10 +1,9 @@
 package cn.huimin100.tc.owf.statemachine.order.domain;
 
-import cn.huimin100.tc.owf.statemachine.order.state.enums.LogisticsStatusEnum;
+import cn.huimin100.tc.owf.statemachine.order.StateRequest;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
-import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
-import cn.huimin100.tc.owf.statemachine.order.state.enums.StateTypeEnum;
 
+import java.util.Map;
 import java.util.Observable;
 
 /**
@@ -25,64 +24,56 @@ import java.util.Observable;
  */
 public class Order extends Observable {
 
-    private Long id;
+	private Long id;
 
-    /**
-     * @see OrderStatusEnum
-     */
-    private int state;
+	/**
+	 * 类型状态 <StateType, StateRequest>
+	 * @see OrderStatusEnum
+	 */
+	private Map<Integer, StateRequest<Order>> typeState;
 
-    /**
-     * 状态类型
-     */
-    private int stateType;
+	/**
+	 * @see OrderStatusEnum
+	 */
+	@Deprecated
+	private int state;
 
-    @Override
-    public String toString() {
-        String order = "";
-        try {
-            order = "Order{" +
-                    "id=" + id +
-                    ", state=" + state +
-                    ", type=" + StateTypeEnum.get(stateType) +
-                    ", desc=" + (
-                    stateType == 1 ? OrderStatusEnum.get(state).getStateDesc() :
-                            stateType == 2 ? PayStatusEnum.get(state).getStateDesc() :
-                                    LogisticsStatusEnum.get(state).getStateDesc()
-            ) +
-                    '}';
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return order;
-    }
+	@Override
+	public String toString() {
+		String order = "Order{" +
+				"id=" + id +
+				", typeState=" + typeState +
+				'}';
+		return order;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public Integer getState() {
-        return state;
-    }
+	public Map<Integer, StateRequest<Order>> getTypeState() {
+		return typeState;
+	}
 
-    public void setState(int state) {
-        this.state = state;
+	public void setTypeState(Map<Integer, StateRequest<Order>> typeState) {
+		this.typeState = typeState;
+	}
+
+	public Integer getState() {
+		return state;
+	}
+
+	public void setState(int state) {
+		this.state = state;
 //        // 观察者 - 拉模式
 //        setChanged(); // 状态改变必须调用
 //        notifyObservers(/*state*/);
-        // 事件方式
+		// 事件方式
 //        ApplicationContext.publishEvent(new ApplicationEvent(this));
-    }
+	}
 
-    public int getStateType() {
-        return stateType;
-    }
-
-    public void setStateType(int stateType) {
-        this.stateType = stateType;
-    }
 }

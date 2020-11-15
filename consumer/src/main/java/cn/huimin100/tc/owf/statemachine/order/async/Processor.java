@@ -61,10 +61,10 @@ public class Processor implements Callable<Order> {
 
 				// 模拟耗时
 				Thread.sleep(500);
+				System.out.println(stateRequest.getClass() + " is processing");
 				stateRequest.process(order);
 				Thread.sleep(500);
 
-				System.out.println(order);
 				ApplicationContext.publishEvent(new ApplicationEvent(order));
 			}
 		} catch (Exception e) {
