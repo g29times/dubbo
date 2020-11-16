@@ -1,11 +1,10 @@
 package cn.huimin100.tc.owf.statemachine.order.state.order;
 
-import cn.huimin100.tc.owf.statemachine.order.ContextApi;
-import cn.huimin100.tc.owf.statemachine.order.context.OrderContext;
+import cn.huimin100.tc.owf.statemachine.order.RequestContext;
+import cn.huimin100.tc.owf.statemachine.order.context.OrderRequestContext;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
 import cn.huimin100.tc.owf.statemachine.order.experiment.processor.AbstractProcessor;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
-import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
 
 /**
  * . _________         .__   _____   __
@@ -29,16 +28,16 @@ public class OrderCancel extends AbstractProcessor<Order> implements OrderStateR
 
     private final String desc = "已取消";
 
-    private OrderContext context;
+    private OrderRequestContext context;
 
     @Override
-    public OrderContext getContext() {
+    public OrderRequestContext getContext() {
         return context;
     }
 
     @Override
-    public void setContext(ContextApi<Order> context) {
-        this.context = (OrderContext)context;
+    public void setContext(RequestContext<Order> context) {
+        this.context = (OrderRequestContext)context;
     }
 
     @Override

@@ -10,14 +10,40 @@ import cn.huimin100.tc.owf.statemachine.order.domain.Transformer;
  * @see org.apache.dubbo.rpc.RpcContext
  * @see org.springframework.context.ConfigurableApplicationContext
  */
-public interface ContextApi<T> {
+public interface RequestContext<T> {
 
-    // *************************** 流式编程区
+    // *************************** 流式编程工具区
+
+    /**
+     * 主接口1 异步推进方法
+     * 1 验证 - 2 处理 - 3 变更状态 - 4 通知
+     */
+    default RequestContext<T> process() {
+        getAsyncProcessor().process(getState());
+        return this;
+    }
+
+    /**
+     * 主接口2 同步推进方法
+     * 1 验证 - 2 处理 - 3 变更状态 - 4 通知
+     */
+    default RequestContext<T> next() {
+        push(getState()::next);
+        return this;
+    }
+
+    /**
+     * 同步 处理请求
+     */
+    default RequestContext<T> push(Request<T> request) {
+        request.process(getDomain());
+        return this;
+    }
 
     /**
      * 查看实体
      */
-    default ContextApi<T> peek() {
+    default RequestContext<T> peek() {
         System.out.print("peek --- ");
         push(System.out::println);
         return this;
@@ -30,49 +56,17 @@ public interface ContextApi<T> {
      * @param <D>         目标类型
      * @return 目标类型的上下文
      */
-    default <D> ContextApi<D> map(Transformer<T, D> transformer) {
-        return new AbstractContext<D>() {
+    default <D> RequestContext<D> map(Transformer<T, D> transformer) {
+        return new AbstractRequestContext<D>() {
         }.setDomain(transformer.transform(getDomain()));
     }
 
     /**
-     * 异步方法
-     *
-     * @return 上下文
-     */
-    default ContextApi<T> process() {
-        getAsyncProcessor().process(getState());
-        return this;
-    }
-
-    /**
-     * 同步方法
-     * 1 验证 - 2 处理 - 3 变更状态 - 4 通知
-     */
-    default ContextApi<T> next() {
-        push(getState()::next);
-        return this;
-    }
-
-    /**
-     * 同步 处理请求
-     */
-    default ContextApi<T> push(Request<T> request) {
-        request.process(getDomain());
-        return this;
-    }
-
-    // *************************** 基础方法区
-
-    /**
      * 获取上下文
      */
-    ContextApi<T> getContext();
+    RequestContext<T> getContext();
 
-    /**
-     * 获取实体
-     */
-    T getDomain();
+    // *************************** 基础方法区
 
     /**
      * 获取实体Id
@@ -80,12 +74,17 @@ public interface ContextApi<T> {
     Long getDomainId();
 
     /**
+     * 获取实体
+     */
+    T getDomain();
+
+    /**
      * 设置实体
      *
      * @param domain 实体
      * @return 上下文
      */
-    ContextApi<T> setDomain(T domain);
+    RequestContext<T> setDomain(T domain);
 
     /**
      * 获取状态
@@ -100,14 +99,15 @@ public interface ContextApi<T> {
      * @param state 状态
      * @return 上下文
      */
-    ContextApi<T> setState(StateRequest<T> state);
+    RequestContext<T> setState(StateRequest<T> state);
 
     /**
      * 查询流程策略
      *
      * @return 流程策略
      */
-    Request<T> getStrategy();
+    @Deprecated
+    RequestContext<T> getStrategy();
 
     /**
      * 设定流程策略
@@ -115,7 +115,8 @@ public interface ContextApi<T> {
      * @param request 流程策略
      * @return 上下文
      */
-    ContextApi<T> setStrategy(Request<T> request);
+    @Deprecated
+    RequestContext<T> setStrategy(Request<T> request);
 
     // *************************** 业务方法区
 

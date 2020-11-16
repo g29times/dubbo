@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 状态类型码
+ * 核心 状态类型码枚举协调器
  *
  * @author litong
  * @program:
@@ -68,7 +68,8 @@ public enum StateTypeEnum {
 	}
 
 	/**
-	 * 核心 规则编排查找器 策略
+	 * 核心 规则编排查找器
+	 * TODO 策略
 	 * 1,1,1 -> OrderCreate
 	 *
 	 * @return 状态执行器

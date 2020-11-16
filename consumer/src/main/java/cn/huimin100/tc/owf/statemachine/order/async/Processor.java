@@ -4,7 +4,7 @@ import cn.huimin100.tc.owf.statemachine.order.StateRequest;
 import cn.huimin100.tc.owf.statemachine.order.async.observer.ApplicationContext;
 import cn.huimin100.tc.owf.statemachine.order.async.observer.ApplicationEvent;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
-import cn.huimin100.tc.owf.statemachine.order.context.OrderContext;
+import cn.huimin100.tc.owf.statemachine.order.context.OrderRequestContext;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -53,7 +53,7 @@ public class Processor implements Callable<Order> {
 				StateRequest<Order> stateRequest = queue.take();
 //				System.out.println("Thread " + Thread.currentThread().getName() + " Processor: request: " + stateRequest);
 
-				OrderContext orderContext = (OrderContext) stateRequest.getContext();
+				OrderRequestContext orderContext = (OrderRequestContext) stateRequest.getContext();
 //                System.out.println("Thread " + Thread.currentThread().getName() + " Processor: context: " + orderContext);
 
 				order = orderContext.getDomain();

@@ -2,19 +2,17 @@ package cn.huimin100.tc.owf.statemachine;
 
 import cn.huimin100.tc.owf.statemachine.demo.ConcreteStateA;
 import cn.huimin100.tc.owf.statemachine.demo.ConcreteStateB;
-import cn.huimin100.tc.owf.statemachine.demo.Context;
 import cn.huimin100.tc.owf.statemachine.demo.State;
-import cn.huimin100.tc.owf.statemachine.order.ContextApi;
+import cn.huimin100.tc.owf.statemachine.order.RequestContext;
 import cn.huimin100.tc.owf.statemachine.order.Request;
 import cn.huimin100.tc.owf.statemachine.order.StateRequest;
 import cn.huimin100.tc.owf.statemachine.order.async.ProcessorPool;
-import cn.huimin100.tc.owf.statemachine.order.context.OrderContext;
+import cn.huimin100.tc.owf.statemachine.order.context.OrderRequestContext;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
 import cn.huimin100.tc.owf.statemachine.order.experiment.processor.OrderProcessorBuilder;
 import cn.huimin100.tc.owf.statemachine.order.experiment.strategy.OrderCancelRequest;
 import cn.huimin100.tc.owf.statemachine.order.experiment.strategy.OrderCreateRequest;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
-import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.order.OrderCancel;
 import cn.huimin100.tc.owf.statemachine.order.state.order.OrderCreate;
 
@@ -111,7 +109,7 @@ public class ClientTest {
 		// order
 		Order order = new Order();
 		order.setId(1234L);
-		OrderContext orderFlow = OrderContext.getThreadContext(order);
+		OrderRequestContext orderFlow = OrderRequestContext.getThreadContext(order);
 
 		new OrderProcessorBuilder().initProcessor().build().invoke(order);
 		System.out.println(order);
@@ -123,34 +121,35 @@ public class ClientTest {
 		// TODO 1 验证 状态跳号 (数据库) 2 幂等
 		Order order1 = new Order();
 		order1.setId(123L);
-		order1.setState(PayStatusEnum.WAITING.getCode());
-		new OrderContext(order1).process();
+//		order1.setState(PayStatusEnum.WAITING.getCode());
+		new OrderRequestContext(order1).next();
+		System.out.println("--------------------------------------------------");
 
 		Order order2 = new Order();
 		order2.setId(124L);
-		OrderContext orderContext = new OrderContext(order2);
-		orderContext = (OrderContext) orderContext.process().getContext();
+		OrderRequestContext orderContext = new OrderRequestContext(order2);
+		orderContext = (OrderRequestContext) orderContext.process().getContext();
 		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++");
 		try {
 			Thread.sleep(1200L);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++" + orderContext.getDomain());
+		System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++》" + orderContext.getDomain());
 
-		new OrderContext(order2).process();
+		new OrderRequestContext(order2).process();
 		try {
 			Thread.sleep(1200L);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		new OrderContext(order2).process();
+		new OrderRequestContext(order2).process();
 		try {
 			Thread.sleep(1200L);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		new OrderContext(order2).process();
+		new OrderRequestContext(order2).process();
 		try {
 			Thread.sleep(1200L);
 		} catch (InterruptedException e) {
@@ -166,7 +165,7 @@ public class ClientTest {
 	private static void orderV3() {
 		Order order = new Order();
 		order.setId(1234L);
-		OrderContext orderFlow = OrderContext.getThreadContext(order);
+		OrderRequestContext orderFlow = OrderRequestContext.getThreadContext(order);
 //        order.setState(OrderStatusEnum.PAY.getCode());
 
 		// of(order) | order.create() | orderService.create(order);
@@ -180,7 +179,7 @@ public class ClientTest {
 	private static class OrderStrategyV3 {
 		public static void process(Order order) {
 			// TODO 需配置化
-			OrderContext context = OrderContext.getThreadContext(order);
+			OrderRequestContext context = OrderRequestContext.getThreadContext(order);
 			OrderStateRequest create = context.getOrderCreate();
 			create.update(order);
 //        db.insert(order);
@@ -194,7 +193,7 @@ public class ClientTest {
 //        ContextApi<Order> orderFlow = OrderContext.getInstance();
 		Order order = new Order();
 		order.setId(1234L);
-		ContextApi<Order> orderFlow = OrderContext.getThreadContext(order);
+		RequestContext<Order> orderFlow = OrderRequestContext.getThreadContext(order);
 		orderFlow.setStrategy(new OrderCreateRequest(orderFlow)).request(order);
 		orderFlow.setStrategy(new OrderCancelRequest(orderFlow)).request(order);
 	}
@@ -202,7 +201,7 @@ public class ClientTest {
 	private static void orderV1() {
 //        ContextApi<Order> orderFlow = OrderContext.getInstance();
 		Order order = new Order();
-		ContextApi<Order> orderFlow = OrderContext.getThreadContext(order);
+		RequestContext<Order> orderFlow = OrderRequestContext.getThreadContext(order);
 
 		StateRequest<Order> create = new OrderCreate(/*orderFlow*/);
 		orderFlow.setState(create);
@@ -220,7 +219,7 @@ public class ClientTest {
 
 	private static void demo() {
 		//创建环境
-		Context context = new Context();
+		cn.huimin100.tc.owf.statemachine.demo.Context context = new cn.huimin100.tc.owf.statemachine.demo.Context();
 		//创建状态
 		State stateA = new ConcreteStateA();
 		//将状态设置到环境中

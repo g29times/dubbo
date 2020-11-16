@@ -5,13 +5,12 @@ import cn.huimin100.tc.owf.client.PayServiceApi;
 import cn.huimin100.tc.owf.statemachine.order.domain.Bill;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
 import cn.huimin100.tc.owf.statemachine.order.experiment.processor.AbstractProcessor;
-import cn.huimin100.tc.owf.statemachine.order.ContextApi;
-import cn.huimin100.tc.owf.statemachine.order.context.OrderContext;
+import cn.huimin100.tc.owf.statemachine.order.RequestContext;
+import cn.huimin100.tc.owf.statemachine.order.context.OrderRequestContext;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.LogisticsStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
-import cn.huimin100.tc.owf.statemachine.order.state.enums.StateTypeEnum;
 
 import java.util.Map;
 
@@ -37,16 +36,16 @@ public class PayWaiting extends AbstractProcessor<Order> implements OrderStateRe
 
     private final String desc = "待支付";
 
-    private OrderContext context;
+    private OrderRequestContext context;
 
     @Override
-    public OrderContext getContext() {
+    public OrderRequestContext getContext() {
         return context;
     }
 
     @Override
-    public void setContext(ContextApi<Order> context) {
-        this.context = (OrderContext)context;
+    public void setContext(RequestContext<Order> context) {
+        this.context = (OrderRequestContext)context;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package cn.huimin100.tc.owf.statemachine.order.context;
 
-import cn.huimin100.tc.owf.statemachine.order.ContextApi;
+import cn.huimin100.tc.owf.statemachine.order.RequestContext;
 import cn.huimin100.tc.owf.statemachine.order.Request;
 import cn.huimin100.tc.owf.statemachine.order.StateRequest;
 import cn.huimin100.tc.owf.statemachine.order.async.RequestAsyncProcessService;
@@ -36,17 +36,17 @@ import java.util.Map;
  * @see org.apache.dubbo.rpc.RpcContext
  * @since 1.0
  */
-public class OrderContext implements ContextApi<Order> {
+public class OrderRequestContext implements RequestContext<Order> {
 
-	private static final TransmittableThreadLocal<OrderContext> THREAD_CONTEXT =
-			new TransmittableThreadLocal<OrderContext>() {
+	private static final TransmittableThreadLocal<OrderRequestContext> THREAD_CONTEXT =
+			new TransmittableThreadLocal<OrderRequestContext>() {
 				@Override
-				protected OrderContext initialValue() {
-					return new OrderContext();
+				protected OrderRequestContext initialValue() {
+					return new OrderRequestContext();
 				}
 			};
 
-	private OrderContext() {
+	private OrderRequestContext() {
 		// 初始化上下文
 		System.out.println(Thread.currentThread() + " --- OrderContext <" + this.hashCode() + "> is created! --- ");
 		// 创建状态集
@@ -60,7 +60,7 @@ public class OrderContext implements ContextApi<Order> {
 		ProcessorObserver.listen();
 	}
 
-	public OrderContext(Order domain) {
+	public OrderRequestContext(Order domain) {
 		// 初始化上下文
 		System.out.println(Thread.currentThread() + " --- OrderContext <" + this.hashCode() + "> is created! --- ");
 		// 创建状态集
@@ -93,17 +93,17 @@ public class OrderContext implements ContextApi<Order> {
 		return this.hashCode() + "";
 	}
 
-	public static OrderContext getThreadContext() {
-		OrderContext orderDomain = THREAD_CONTEXT.get();
+	public static OrderRequestContext getThreadContext() {
+		OrderRequestContext orderDomain = THREAD_CONTEXT.get();
 		return orderDomain;
 	}
 
-	public static OrderContext getThreadContext(Order domain) {
+	public static OrderRequestContext getThreadContext(Order domain) {
 //        RequestAsyncProcessService asyncProcessor = RequestAsyncProcessServiceImpl.getInstance();
 //        Processor processor = asyncProcessor.getProcessor(domain.getId());
 //        OrderContext orderDomain = processor.getOrderContext();
 //        orderDomain.setDomain(domain);
-		OrderContext context = THREAD_CONTEXT.get();
+		OrderRequestContext context = THREAD_CONTEXT.get();
 		context.setDomain(domain);
 		return context;
 	}
@@ -132,12 +132,12 @@ public class OrderContext implements ContextApi<Order> {
 	/**
 	 * 策略 持有一个Strategy类型的对象实例
 	 */
-	private Request request;
+	private Request<Order> request;
 
 	// *************************** 基础方法区
 
 	@Override
-	public ContextApi<Order> getContext() {
+	public RequestContext<Order> getContext() {
 		return this;
 	}
 
@@ -152,7 +152,7 @@ public class OrderContext implements ContextApi<Order> {
 	}
 
 	@Override
-	public ContextApi<Order> setDomain(Order domain) {
+	public RequestContext<Order> setDomain(Order domain) {
 		setState(domain);
 		this.domain = domain;
 		return this;
@@ -179,23 +179,23 @@ public class OrderContext implements ContextApi<Order> {
 	}
 
 	@Override
-	public StateRequest getState() {
+	public StateRequest<Order> getState() {
 		return state;
 	}
 
 	@Override
-	public ContextApi setState(StateRequest state) {
+	public RequestContext<Order> setState(StateRequest<Order> state) {
 		this.state = (OrderStateRequest) state;
 		return this;
 	}
 
 	@Override
-	public Request getStrategy() {
-		return request;
+	public RequestContext<Order> getStrategy() {
+		return this;
 	}
 
 	@Override
-	public ContextApi setStrategy(Request request) {
+	public RequestContext<Order> setStrategy(Request<Order> request) {
 		this.request = request;
 		return this;
 	}

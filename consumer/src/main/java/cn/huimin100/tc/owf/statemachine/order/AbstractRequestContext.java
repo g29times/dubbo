@@ -18,14 +18,14 @@ import cn.huimin100.tc.owf.statemachine.order.async.RequestAsyncProcessService;
  * @see Object
  * @since 1.0
  */
-abstract class AbstractContext<T> implements ContextApi<T> {
+abstract class AbstractRequestContext<T> implements RequestContext<T> {
 
     private T domain;
     private StateRequest<T> state;
     private Request<T> request;
 
     @Override
-    public ContextApi<T> getContext() {
+    public RequestContext<T> getContext() {
         return this;
     }
 
@@ -40,7 +40,7 @@ abstract class AbstractContext<T> implements ContextApi<T> {
     }
 
     @Override
-    public ContextApi<T> setDomain(T domain) {
+    public RequestContext<T> setDomain(T domain) {
         this.domain = domain;
         return this;
     }
@@ -51,18 +51,18 @@ abstract class AbstractContext<T> implements ContextApi<T> {
     }
 
     @Override
-    public ContextApi<T> setState(StateRequest<T> state) {
+    public RequestContext<T> setState(StateRequest<T> state) {
         this.state = state;
         return this;
     }
 
     @Override
-    public Request<T> getStrategy() {
-        return request;
+    public RequestContext<T> getStrategy() {
+        return this;
     }
 
     @Override
-    public ContextApi<T> setStrategy(Request<T> request) {
+    public RequestContext<T> setStrategy(Request<T> request) {
         this.request = request;
         return this;
     }

@@ -20,37 +20,20 @@ public interface StateRequest<T> extends Request<T> {
 
     /**
      * 下推
+     * Deprecated: 和 Request.process 合并
      */
+    @Deprecated
     void next(T domain);
-
-    /**
-     * 获取当前状态描述
-     */
-    String getStateDesc();
-
-    /**
-     * 获取当前状态
-     *
-     * @return 1 Create 2 Finish 3 Return
-     */
-    int getStateValue();
-
-    /**
-     * 设置状态
-     *
-     * @param value 1 Create 2 Finish 3 Return
-     */
-//    void setStateValue(int value);
 
     /**
      * 获取请求对应的上下文
      */
-    ContextApi<T> getContext();
+    RequestContext<T> getContext();
 
     /**
      * 设置请求的上下文
      */
-    void setContext(ContextApi<T> context);
+    void setContext(RequestContext<T> context);
 
     /**
      * 获取业务主键
@@ -60,5 +43,24 @@ public interface StateRequest<T> extends Request<T> {
     }
 
 //    T getDomain();
+
+    /**
+     * 获取当前状态
+     *
+     * @return 1 Create 2 Finish 3 Return
+     */
+    int getStateValue();
+
+    /**
+     * 获取当前状态描述
+     */
+    String getStateDesc();
+
+    /**
+     * 设置状态
+     *
+     * @param value 1 Create 2 Finish 3 Return
+     */
+//    void setStateValue(int value);
 
 }

@@ -1,8 +1,8 @@
 package cn.huimin100.tc.owf.statemachine.order.experiment.strategy;
 
-import cn.huimin100.tc.owf.statemachine.order.ContextApi;
+import cn.huimin100.tc.owf.statemachine.order.RequestContext;
 import cn.huimin100.tc.owf.statemachine.order.Request;
-import cn.huimin100.tc.owf.statemachine.order.context.OrderContext;
+import cn.huimin100.tc.owf.statemachine.order.context.OrderRequestContext;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
@@ -25,10 +25,10 @@ import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
  */
 public class OrderCancelRequest implements Request<Order> {
 
-    private OrderContext context;
+    private OrderRequestContext context;
 
-    public OrderCancelRequest(ContextApi<Order> context) {
-        this.context = (OrderContext) context;
+    public OrderCancelRequest(RequestContext<Order> context) {
+        this.context = (OrderRequestContext) context;
     }
 
     @Override

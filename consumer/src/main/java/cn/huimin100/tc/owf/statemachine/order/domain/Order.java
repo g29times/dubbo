@@ -3,6 +3,7 @@ package cn.huimin100.tc.owf.statemachine.order.domain;
 import cn.huimin100.tc.owf.statemachine.order.StateRequest;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Observable;
 
@@ -22,7 +23,7 @@ import java.util.Observable;
  * @see 观察者模式 https://www.cnblogs.com/java-my-life/archive/2012/05/16/2502279.html
  * @since 1.0
  */
-public class Order extends Observable {
+public class Order extends Observable implements Serializable {
 
 	private Long id;
 
