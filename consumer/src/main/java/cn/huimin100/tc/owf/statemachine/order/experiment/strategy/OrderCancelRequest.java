@@ -35,7 +35,7 @@ public class OrderCancelRequest implements Request<Order> {
     public void process(Order order) {
         OrderStateRequest state = OrderStatusEnum.CANCEL.getState();
         state.reverse(order);
-        state.next(order);
+        state.change(order);
         state.log(order);
     }
 }

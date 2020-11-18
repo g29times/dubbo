@@ -9,6 +9,7 @@ import cn.huimin100.tc.owf.statemachine.order.async.observer.OrderObserver;
 import cn.huimin100.tc.owf.statemachine.order.async.observer.ProcessorObserver;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
+import cn.huimin100.tc.owf.statemachine.order.state.StateMachine;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.StateTypeEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.logistics.LogisticsPick;
 import cn.huimin100.tc.owf.statemachine.order.state.order.OrderCancel;
@@ -65,10 +66,10 @@ public class OrderRequestContext implements RequestContext<Order> {
 		System.out.println(Thread.currentThread() + " --- OrderContext <" + this.hashCode() + "> is created! --- ");
 		// 创建状态集
 		this.orderCreate = new OrderCreate();
-		this.orderFinish = new OrderFinish();
-		this.orderCancel = new OrderCancel();
-		this.payCreate = new PayWaiting();
-		this.logisticsCreate = new LogisticsPick();
+//		this.orderFinish = new OrderFinish();
+//		this.orderCancel = new OrderCancel();
+//		this.payCreate = new PayWaiting();
+//		this.logisticsCreate = new LogisticsPick();
 		// 开始监听
 		OrderObserver.listen();
 		ProcessorObserver.listen();
@@ -123,11 +124,11 @@ public class OrderRequestContext implements RequestContext<Order> {
 	/**
 	 * 状态模式 定义出所有状态
 	 */
-	private final OrderStateRequest orderCreate;
-	private final OrderStateRequest payCreate;
-	private final OrderStateRequest logisticsCreate;
-	private final OrderStateRequest orderFinish;
-	private final OrderStateRequest orderCancel;
+	private OrderStateRequest orderCreate;
+	private OrderStateRequest payCreate;
+	private OrderStateRequest logisticsCreate;
+	private OrderStateRequest orderFinish;
+	private OrderStateRequest orderCancel;
 
 	/**
 	 * 策略 持有一个Strategy类型的对象实例
@@ -159,18 +160,20 @@ public class OrderRequestContext implements RequestContext<Order> {
 	}
 
 	private void setState(Order domain) {
+//		StateMachine machine = StateMachine.getInstanceByHash(domain);
 		// 刚创建 设置初始状态
 		if (/*domain.getState() == null || domain.getState() == 0 || */
-				domain.getTypeState() == null || domain.getTypeState().get(1).getStateValue() == 0) {
+				domain.getTypeState() == null || domain.getTypeState().get(1) == null || domain.getTypeState().get(1).getStateValue() == 0) {
 			// 默认为订单状态
 			this.state = this.orderCreate;
 			this.state.setContext(this);
 
-			Map<Integer, StateRequest<Order>> map = new HashMap<>();
-			map.put(1, this.orderCreate);
+//			Map<Integer, StateRequest<Order>> map = new HashMap<>(1);
+//			map.put(1, this.orderCreate);
 //			map.put(2, this.payCreate);
 //			map.put(3, this.logisticsCreate);
-			domain.setTypeState(map);
+//			domain.setTypeState(map);
+			domain.setState1(this.orderCreate.getStateValue());
 			System.out.println("<" + this + "> - " + "订单已创建 " + domain);
 		} else {
 			this.state = StateTypeEnum.get(domain.getTypeState());

@@ -1,9 +1,13 @@
 package cn.huimin100.tc.owf.statemachine.order.domain;
 
 import cn.huimin100.tc.owf.statemachine.order.StateRequest;
+import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.LogisticsStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 
@@ -31,13 +35,16 @@ public class Order extends Observable implements Serializable {
 	 * 类型状态 <StateType, StateRequest>
 	 * @see OrderStatusEnum
 	 */
-	private Map<Integer, StateRequest<Order>> typeState;
+	private Map<Integer, OrderStateRequest> typeState = new HashMap<>(3);
 
 	/**
 	 * @see OrderStatusEnum
 	 */
-	@Deprecated
-	private int state;
+	private int state1;
+
+	private int state2;
+
+	private int state3;
 
 	@Override
 	public String toString() {
@@ -56,20 +63,21 @@ public class Order extends Observable implements Serializable {
 		this.id = id;
 	}
 
-	public Map<Integer, StateRequest<Order>> getTypeState() {
+	public Map<Integer, OrderStateRequest> getTypeState() {
 		return typeState;
 	}
 
-	public void setTypeState(Map<Integer, StateRequest<Order>> typeState) {
+	public void setTypeState(Map<Integer, OrderStateRequest> typeState) {
 		this.typeState = typeState;
 	}
 
-	public Integer getState() {
-		return state;
+	public Integer getState1() {
+		return state1;
 	}
 
-	public void setState(int state) {
-		this.state = state;
+	public void setState1(int state1) {
+		this.state1 = state1;
+		this.typeState.put(1, OrderStatusEnum.get(state1));
 //        // 观察者 - 拉模式
 //        setChanged(); // 状态改变必须调用
 //        notifyObservers(/*state*/);
@@ -77,4 +85,21 @@ public class Order extends Observable implements Serializable {
 //        ApplicationContext.publishEvent(new ApplicationEvent(this));
 	}
 
+	public int getState2() {
+		return state2;
+	}
+
+	public void setState2(int state2) {
+		this.state2 = state2;
+		this.typeState.put(2, PayStatusEnum.get(state2));
+	}
+
+	public int getState3() {
+		return state3;
+	}
+
+	public void setState3(int state3) {
+		this.state3 = state3;
+		this.typeState.put(3, LogisticsStatusEnum.get(state3));
+	}
 }

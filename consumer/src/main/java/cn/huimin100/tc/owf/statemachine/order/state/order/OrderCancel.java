@@ -5,6 +5,15 @@ import cn.huimin100.tc.owf.statemachine.order.context.OrderRequestContext;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
 import cn.huimin100.tc.owf.statemachine.order.experiment.processor.AbstractProcessor;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.LogisticsStatusEnum;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
+import cn.huimin100.tc.owf.statemachine.order.state.logistics.LogisticsPick;
+import cn.huimin100.tc.owf.statemachine.order.state.pay.PayWaiting;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * . _________         .__   _____   __
@@ -22,7 +31,7 @@ import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
  * @see Object
  * @since 1.0
  */
-public class OrderCancel extends AbstractProcessor<Order> implements OrderStateRequest {
+public class OrderCancel /*extends AbstractProcessor<Order> */implements OrderStateRequest {
 
     private final int value = 18;
 
@@ -37,7 +46,7 @@ public class OrderCancel extends AbstractProcessor<Order> implements OrderStateR
 
     @Override
     public void setContext(RequestContext<Order> context) {
-        this.context = (OrderRequestContext)context;
+        this.context = (OrderRequestContext) context;
     }
 
     @Override
@@ -59,7 +68,7 @@ public class OrderCancel extends AbstractProcessor<Order> implements OrderStateR
     }
 
     @Override
-    public void update(Order order) {
+    public void pre(Order order) {
 
     }
 
@@ -69,12 +78,19 @@ public class OrderCancel extends AbstractProcessor<Order> implements OrderStateR
     }
 
     @Override
-    public void next(Order order) {
+    public void change(Order order) {
 
+    }
+
+    public List<OrderStateRequest> getParents() {
+        return new ArrayList<>(Arrays.asList(OrderStatusEnum.CREATE.getState(), PayStatusEnum.WAITING.getState(), LogisticsStatusEnum.PICK.getState()));
     }
 
     @Override
-    public void process(Order domain) {
-        next(domain);
+    public boolean check(Order order) {
+        return getParents().contains(order.getTypeState().get(1)) ||
+                getParents().contains(order.getTypeState().get(2)) ||
+                getParents().contains(order.getTypeState().get(3));
     }
+
 }

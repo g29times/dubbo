@@ -84,7 +84,7 @@ public class ClientTest {
 
 		Order order1 = new Order();
 		order1.setId(1234L);
-		order1.setState(2);
+		order1.setState1(2);
 		System.out.println(updateOrderV6(order1));
 	}
 
@@ -97,7 +97,7 @@ public class ClientTest {
 	private static Order updateOrderV6(Order order) {
 		DB db = DB.getDB();
 		Order orderDB = db.getOrder(order.getId());
-		orderDB.setState(order.getState());
+		orderDB.setState1(order.getState1());
 		db.setOrder(orderDB);
 		return orderDB;
 	}
@@ -181,9 +181,9 @@ public class ClientTest {
 			// TODO 需配置化
 			OrderRequestContext context = OrderRequestContext.getThreadContext(order);
 			OrderStateRequest create = context.getOrderCreate();
-			create.update(order);
+			create.pre(order);
 //        db.insert(order);
-			create.next(order);
+			create.change(order);
 			create.log(order);
 			System.out.println();
 		}

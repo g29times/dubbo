@@ -1,12 +1,13 @@
-package cn.huimin100.tc.owf.statemachine.order.state.logistics;
+package cn.huimin100.tc.owf.statemachine.order.state.order;
 
 import cn.huimin100.tc.owf.statemachine.order.RequestContext;
 import cn.huimin100.tc.owf.statemachine.order.StateRequest;
 import cn.huimin100.tc.owf.statemachine.order.context.OrderRequestContext;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
 import cn.huimin100.tc.owf.statemachine.order.experiment.processor.AbstractProcessor;
-import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
 
 /**
  * . _________         .__   _____   __
@@ -19,16 +20,16 @@ import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
  * <a href="www.google.com">google</a>
  *
  * @author li tong
- * @description: 仓配已拣货
- * @date 2020/10/21 17:19
+ * @description: ToC订单已创建
+ * @date 2020/10/14 18:06
  * @see Object
  * @since 1.0
  */
-public class LogisticsPick /*extends AbstractProcessor<Order> */implements OrderStateRequest {
+public class OrderCreateToC extends AbstractProcessor<Order> implements OrderStateRequest {
 
-    private final int value = 32;
+    private final int value = 11;
 
-    private final String desc = "已拣货";
+    private final String desc = "已创建";
 
     private OrderRequestContext context;
 
@@ -39,7 +40,7 @@ public class LogisticsPick /*extends AbstractProcessor<Order> */implements Order
 
     @Override
     public void setContext(RequestContext<Order> context) {
-        this.context = (OrderRequestContext)context;
+        this.context = (OrderRequestContext) context;
     }
 
     @Override
@@ -54,7 +55,7 @@ public class LogisticsPick /*extends AbstractProcessor<Order> */implements Order
 
     @Override
     public String toString() {
-        return "LogisticsState{" +
+        return "OrderState{" +
                 "value=" + value +
                 ", desc='" + desc + '\'' +
                 '}';
@@ -63,30 +64,48 @@ public class LogisticsPick /*extends AbstractProcessor<Order> */implements Order
     @Override
     public void pre(Order order) {
         getContext().setState(this);
-        System.out.println(getContext() + " - " + order + " -> 已拣货");
+        System.out.println(getContext() + " - " + order + " -> ToC创建订单");
         order.setState1(value);
     }
 
     @Override
     public void reverse(Order order) {
-        System.out.println("输运拦截");
-    }
-
-    @Override
-    public void change(Order order) {
-        StateRequest<Order> next = OrderStatusEnum.FINISH.getState();
-        getContext().setState(next);
-        System.out.println(System.currentTimeMillis() + " [" + Thread.currentThread().getName() + "]" +
-                " <" + getContext() + "> "/* + order*/ + " 已拣货 -> 已送达（已完成）");
+        StateRequest<Order> prev = OrderStatusEnum.CANCEL.getState();
+        getContext().setState(prev);
+        System.out.println(getContext() + " - " + order + " -> ToC取消订单");
 
 //        Map<Integer, StateRequest<Order>> map = order.getTypeState();
-//        map.put(1, next);
+//        map.put(1, prev);
 //        order.setTypeState(map);
-        order.setState1(next.getStateValue());
+        order.setState1(prev.getStateValue());
     }
 
     @Override
+    public /*synchronized*/ void change(Order order) {
+        // TODO 这里考虑配置化
+        // V1 写死：context.getPayCreate();
+        // V2 查库(或配置)获得：context.getNext();
+        // V3 通过服务调用结果判断走哪个分支
+        StateRequest<Order> next = PayStatusEnum.WAITING.getState();
+        OrderRequestContext context = getContext();
+        context.setState(next);
+        System.out.println(System.currentTimeMillis() + " [" + Thread.currentThread().getName() + "]" +
+                " <" + context + "> "/* + order*/ + " ToC已创建 -> 待支付");
+
+        // 仅模拟，实际是调用oms接口保存实体状态
+//        Map<Integer, StateRequest<Order>> map = order.getTypeState();
+//        map.put(2, next);
+//        order.setTypeState(map);
+        order.setState2(next.getStateValue());
+    }
+
+    /**
+     * 实现预编排
+     */
+    @Override
     public void process(Order order) {
+        // 1 验证 - 2 处理 - 3 变更状态 - 4 通知
         change(order);
     }
+
 }

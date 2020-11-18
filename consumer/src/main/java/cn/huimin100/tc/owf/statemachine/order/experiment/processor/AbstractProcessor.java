@@ -30,6 +30,11 @@ public abstract class AbstractProcessor<T> implements Processor<T> {
         return true;
     }
 
+//    @Override
+//    public void process(T t) {
+//        System.out.println(t);
+//    }
+
     public void setNext(AbstractProcessor<T> next) {
         this.next = next;
     }

@@ -58,7 +58,7 @@ public class PayDriver implements OrderStateRequest {
     }
 
     @Override
-    public void update(Order order) {
+    public void pre(Order order) {
 
     }
 
@@ -68,12 +68,12 @@ public class PayDriver implements OrderStateRequest {
     }
 
     @Override
-    public void next(Order order) {
+    public void change(Order order) {
 
     }
 
     @Override
     public void process(Order domain) {
-        next(domain);
+        change(domain);
     }
 }

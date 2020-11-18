@@ -9,8 +9,6 @@ import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
 
-import java.util.Map;
-
 /**
  * . _________         .__   _____   __
  * ./   _____/__  _  __|__|_/ ____\_/  |_
@@ -27,23 +25,13 @@ import java.util.Map;
  * @see Object
  * @since 1.0
  */
-public class OrderCreate extends AbstractProcessor<Order> implements OrderStateRequest {
+public class OrderCreate /*extends AbstractProcessor<Order> */implements OrderStateRequest {
 
     private final int value = 11;
 
     private final String desc = "已创建";
 
     private OrderRequestContext context;
-
-    @Override
-    public OrderRequestContext getContext() {
-        return context;
-    }
-
-    @Override
-    public void setContext(RequestContext<Order> context) {
-        this.context = (OrderRequestContext) context;
-    }
 
     @Override
     public int getStateValue() {
@@ -56,6 +44,16 @@ public class OrderCreate extends AbstractProcessor<Order> implements OrderStateR
     }
 
     @Override
+    public OrderRequestContext getContext() {
+        return context;
+    }
+
+    @Override
+    public void setContext(RequestContext<Order> context) {
+        this.context = (OrderRequestContext) context;
+    }
+
+    @Override
     public String toString() {
         return "OrderState{" +
                 "value=" + value +
@@ -64,26 +62,26 @@ public class OrderCreate extends AbstractProcessor<Order> implements OrderStateR
     }
 
     @Override
-    public void update(Order order) {
-        getContext().setState(this);
-        System.out.println(getContext() + " - " + order + " -> 创建订单");
-        order.setState(value);
-    }
-
-    @Override
     public void reverse(Order order) {
         StateRequest<Order> prev = OrderStatusEnum.CANCEL.getState();
         getContext().setState(prev);
         System.out.println(getContext() + " - " + order + " -> 取消订单");
 
-        Map<Integer, StateRequest<Order>> map = order.getTypeState();
-        map.put(1, prev);
-        order.setTypeState(map);
-//        order.setState(prev.getStateValue());
+//        Map<Integer, StateRequest<Order>> map = order.getTypeState();
+//        map.put(1, prev);
+//        order.setTypeState(map);
+        order.setState1(prev.getStateValue());
     }
 
     @Override
-    public /*synchronized*/ void next(Order order) {
+    public void pre(Order order) {
+        getContext().setState(this);
+        System.out.println(getContext() + " - " + order + " -> 创建订单");
+        order.setState1(value);
+    }
+
+    @Override
+    public /*synchronized*/ void change(Order order) {
         // TODO 这里考虑配置化
         // V1 写死：context.getPayCreate();
         // V2 查库(或配置)获得：context.getNext();
@@ -95,20 +93,22 @@ public class OrderCreate extends AbstractProcessor<Order> implements OrderStateR
                 " <" + context + "> "/* + order*/ + " 已创建 -> 待支付");
 
         // 仅模拟，实际是调用oms接口保存实体状态
-        Map<Integer, StateRequest<Order>> map = order.getTypeState();
-        map.put(2, next);
-        order.setTypeState(map);
-//        order.setState(next.getStateValue());
-//        order.setStateType(StateTypeEnum.PAY.getCode());
+//        Map<Integer, StateRequest<Order>> map = order.getTypeState();
+//        map.put(2, next);
+//        order.setTypeState(map);
+        order.setState2(next.getStateValue());
     }
 
-    /**
-     * 实现预编排
-     */
-    @Override
-    public void process(Order order) {
-        // 1 验证 - 2 处理 - 3 变更状态 - 4 通知
-        next(order);
-    }
+    //    public List<OrderStateRequest> getParents() {
+//
+//    }
+//
+//    @Override
+//    public boolean check(Order order) {
+//        // 111 222 333 | 123
+//        if(getParents().containsAll(order.getTypeState().values())) {
+//            return true;
+//        }
+//    }
 
 }

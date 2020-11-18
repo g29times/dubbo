@@ -12,8 +12,6 @@ import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
 
-import java.util.Map;
-
 /**
  * . _________         .__   _____   __
  * ./   _____/__  _  __|__|_/ ____\_/  |_
@@ -30,7 +28,7 @@ import java.util.Map;
  * @see Object
  * @since 1.0
  */
-public class PayWaiting extends AbstractProcessor<Order> implements OrderStateRequest {
+public class PayWaiting /*extends AbstractProcessor<Order> */implements OrderStateRequest {
 
     private final int value = 21;
 
@@ -67,10 +65,10 @@ public class PayWaiting extends AbstractProcessor<Order> implements OrderStateRe
     }
 
     @Override
-    public void update(Order order) {
+    public void pre(Order order) {
         getContext().setState(this);
         System.out.println(getContext() + " - " + order + " -> 待支付");
-        order.setState(value);
+        order.setState1(value);
     }
 
     @Override
@@ -80,22 +78,25 @@ public class PayWaiting extends AbstractProcessor<Order> implements OrderStateRe
         System.out.println(System.currentTimeMillis() + " [" + Thread.currentThread().getName() + "]" +
                 " <" + getContext() + "> "/* + order*/ + " -> 支付取消");
 
-        Map<Integer, StateRequest<Order>> map = order.getTypeState();
-        map.put(2, prev);
-        order.setTypeState(map);
-//        order.setState(prev.getStateValue());
+//        Map<Integer, StateRequest<Order>> map = order.getTypeState();
+//        map.put(2, prev);
+//        order.setTypeState(map);
+        order.setState2(prev.getStateValue());
     }
 
     @Override
-    public void next(Order order) {
-        if (order.getTypeState() != null && order.getTypeState().get(1).getStateValue() == OrderStatusEnum.CANCEL.getState().getStateValue()
+    public void change(Order order) {
+        if (order.getTypeState() != null
+                && order.getTypeState().get(1).getStateValue() == OrderStatusEnum.CANCEL.getState().getStateValue()
                 /*order.getState().equals(OrderStatusEnum.CANCEL.getState().getStateValue())*/) {
             System.out.println("支付已取消 无法继续！");
             return;
         }
-        if (order.getTypeState() != null && order.getTypeState().get(2).getStateValue() != PayStatusEnum.WAITING.getState().getStateValue()
-            /*!order.getState().equals(PayStatusEnum.WAITING.getState().getStateValue())*/) {
-            System.out.println("支付状态跳号 无法继续！期望值：" + PayStatusEnum.WAITING.getState() + "，实际值：" + order.getTypeState().get(2).getStateValue()/*order.getState()*/);
+        if (order.getTypeState() != null
+                && order.getTypeState().get(2).getStateValue() != PayStatusEnum.WAITING.getState().getStateValue()
+            ) {
+            System.out.println("支付状态跳号 无法继续！期望值：" + PayStatusEnum.WAITING.getState() + "，实际值："
+                    + order.getTypeState().get(2).getStateValue());
             return;
         }
         // TODO 模拟调用支付系统 状态分支
@@ -105,11 +106,10 @@ public class PayWaiting extends AbstractProcessor<Order> implements OrderStateRe
             System.out.println(System.currentTimeMillis() + " [" + Thread.currentThread().getName() + "]" +
                     " <" + getContext() + "> " /*+ order */+ " 已支付 -> 运送中");
 
-            Map<Integer, StateRequest<Order>> map = order.getTypeState();
-            map.put(3, next);
-            order.setTypeState(map);
-//            order.setState(next.getStateValue());
-//            order.setStateType(StateTypeEnum.LOGISTICS.getCode());
+//            Map<Integer, StateRequest<Order>> map = order.getTypeState();
+//            map.put(3, next);
+//            order.setTypeState(map);
+            order.setState3(next.getStateValue());
         } else {
             reverse(order);
         }
@@ -117,7 +117,7 @@ public class PayWaiting extends AbstractProcessor<Order> implements OrderStateRe
 
     @Override
     public void process(Order order) {
-        next(order);
+        change(order);
     }
 
 }

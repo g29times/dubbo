@@ -19,11 +19,16 @@ package cn.huimin100.tc.owf.statemachine.order;
 public interface StateRequest<T> extends Request<T> {
 
     /**
-     * 下推
-     * Deprecated: 和 Request.process 合并
+     * 检查
      */
-    @Deprecated
-    void next(T domain);
+    default boolean check(T domain) {
+        return true;
+    }
+
+    /**
+     * 改状态
+     */
+    void change(T domain);
 
     /**
      * 获取请求对应的上下文

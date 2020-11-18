@@ -36,9 +36,9 @@ public class ObserverTest {
         OrderServiceApi orderServiceApi = new OrderServiceApi();
         Order order = new Order();
         order.setId(1234L);
-        order.setState(1);
+        order.setState1(1);
         orderServiceApi.addOrUpdate(order);
-        order.setState(2);
+        order.setState1(2);
     }
 
     /**
@@ -54,9 +54,9 @@ public class ObserverTest {
         Order order = new Order();
         Observer observer = new OrderObserver(order);
         order.setId(1234L);
-        order.setState(1);
+        order.setState1(1);
         orderServiceApi.addOrUpdate(order);
-        order.setState(2);
+        order.setState1(2);
         orderServiceApi.addOrUpdate(order);
     }
 
@@ -65,9 +65,9 @@ public class ObserverTest {
         OrderServiceApi orderServiceApi = new OrderServiceApi();
         Order order = new Order();
         order.setId(1234L);
-        order.setState(1);
+        order.setState1(1);
         orderServiceApi.addOrUpdate(order);
-        order.setState(2);
+        order.setState1(2);
         orderServiceApi.addOrUpdate(order);
     }
 

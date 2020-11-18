@@ -33,8 +33,8 @@ public class OrderCreateRequest implements Request<Order> {
 	@Override
 	public void process(Order order) {
 		OrderStateRequest state = context.getOrderCreate();
-		state.update(order);
-		state.next(order);
+		state.pre(order);
+		state.change(order);
 		state.log(order);
 	}
 

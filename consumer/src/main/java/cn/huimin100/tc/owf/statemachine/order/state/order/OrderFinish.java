@@ -59,7 +59,7 @@ public class OrderFinish extends AbstractProcessor<Order> implements OrderStateR
     }
 
     @Override
-    public void update(Order order) {
+    public void pre(Order order) {
 
     }
 
@@ -69,13 +69,13 @@ public class OrderFinish extends AbstractProcessor<Order> implements OrderStateR
     }
 
     @Override
-    public void next(Order order) {
+    public void change(Order order) {
         System.out.println(System.currentTimeMillis() + " [" + Thread.currentThread().getName() + "]" +
                 " <" + getContext() + "> "/* + order*/ + " 已完成 没有后续节点");
     }
 
     @Override
     public void process(Order domain) {
-        next(domain);
+        change(domain);
     }
 }

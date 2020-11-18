@@ -74,7 +74,7 @@ public enum StateTypeEnum {
 	 *
 	 * @return 状态执行器
 	 */
-	public static OrderStateRequest get(Map<Integer, StateRequest<Order>> typeState) {
+	public static OrderStateRequest get(Map<Integer, OrderStateRequest> typeState) {
 		if (typeState.get(1).getStateValue() == OrderStatusEnum.CREATE.getCode()
 				&& typeState.get(2) == null && typeState.get(3)== null) {
 			return OrderStatusEnum.CREATE.getState();

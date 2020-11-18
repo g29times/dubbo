@@ -24,12 +24,28 @@ public interface OrderStateRequest extends StateRequest<Order> {
     /**
      * 更新状态
      */
-    void update(Order order);
+    void pre(Order order);
+
+    default void after(Order order) {
+        System.out.println(order);
+    }
 
     /**
      * 更新逆向状态
      */
     void reverse(Order order);
+
+    @Override
+    default void process(Order order) {
+        // 1 验证 - 2 处理 - 3 变更状态 - 4 通知
+        if(check(order)) {
+            pre(order);
+            change(order);
+            after(order);
+        } else {
+            System.out.println("检查不通过 - " + order);
+        }
+    }
 
     /**
      * 操作日志（快照）

@@ -24,7 +24,7 @@ public class OrderDto {
 
     public OrderDto(Order o) {
         this.id = o.getId();
-        this.state = o.getState();
+        this.state = o.getState1();
     }
 
     @Override

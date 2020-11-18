@@ -27,9 +27,9 @@ public class OrderProcessorBuilder extends AbstractProcessorBuilder<Order> {
 
     @Override
     public OrderProcessorBuilder initProcessor() {
-        addLast(new OrderCreate());
-        addLast(new PayWaiting());
-        addLast(new LogisticsPick());
+//        addLast(new OrderCreate());
+//        addLast(new PayWaiting());
+//        addLast(new LogisticsPick());
         return this;
     }
 

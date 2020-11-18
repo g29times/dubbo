@@ -40,7 +40,7 @@ public class OrderObserver implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         Order order = (Order) o;
-        System.out.print("Heard Order update state=" + order.getState() + ", ");
+        System.out.print("Heard Order update state=" + order.getState1() + ", ");
         // 推模式
 //        System.out.println("Subject update..." + o + ", state=" + arg);
 

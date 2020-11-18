@@ -28,7 +28,7 @@ public interface RequestContext<T> {
      * 1 验证 - 2 处理 - 3 变更状态 - 4 通知
      */
     default RequestContext<T> next() {
-        push(getState()::next);
+        push(getState()::process);
         return this;
     }
 
