@@ -4,6 +4,9 @@ import cn.huimin100.tc.owf.statemachine.order.RequestContext;
 import cn.huimin100.tc.owf.statemachine.order.context.OrderRequestContext;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
+
+import java.util.Map;
 
 /**
  * . _________         .__   _____   __
@@ -58,6 +61,12 @@ public class PayCancel implements OrderStateRequest {
     }
 
     @Override
+    public Boolean isHandler(Order order) {
+        Map<Integer, OrderStateRequest> typeState = order.getTypeState();
+        return typeState.get(2) != null && typeState.get(2).getStateValue() == PayStatusEnum.CANCEL.getCode();
+    }
+
+    @Override
     public void pre(Order order) {
 
     }
@@ -69,11 +78,8 @@ public class PayCancel implements OrderStateRequest {
 
     @Override
     public void change(Order order) {
-
+        System.out.println(getContext() + " - " + order + " -> 支付取消");
     }
 
-    @Override
-    public void process(Order domain) {
-        change(domain);
-    }
+
 }

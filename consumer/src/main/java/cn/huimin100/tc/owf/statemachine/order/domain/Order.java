@@ -1,6 +1,5 @@
 package cn.huimin100.tc.owf.statemachine.order.domain;
 
-import cn.huimin100.tc.owf.statemachine.order.StateRequest;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.LogisticsStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
@@ -29,77 +28,93 @@ import java.util.Observable;
  */
 public class Order extends Observable implements Serializable {
 
-	private Long id;
+    /**
+     * 业务线 - 多个状态机
+     */
+    private int businessLine;
 
-	/**
-	 * 类型状态 <StateType, StateRequest>
-	 * @see OrderStatusEnum
-	 */
-	private Map<Integer, OrderStateRequest> typeState = new HashMap<>(3);
+    /**
+     * 多种状态整合
+     *
+     * @see OrderStatusEnum
+     */
+    private Map<Integer, OrderStateRequest> typeState = new HashMap<>(3);
 
-	/**
-	 * @see OrderStatusEnum
-	 */
-	private int state1;
+    // *************************************** 基础属性
 
-	private int state2;
+    private Long id;
 
-	private int state3;
+    /**
+     * @see OrderStatusEnum
+     */
+    private int state1;
 
-	@Override
-	public String toString() {
-		String order = "Order{" +
-				"id=" + id +
-				", typeState=" + typeState +
-				'}';
-		return order;
-	}
+    private int state2;
 
-	public Long getId() {
-		return id;
-	}
+    private int state3;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Override
+    public String toString() {
+        String order = "Order{" +
+                "id=" + id +
+                ", typeState=" + typeState +
+                '}';
+        return order;
+    }
 
-	public Map<Integer, OrderStateRequest> getTypeState() {
-		return typeState;
-	}
+    public int getBusinessLine() {
+        return businessLine;
+    }
 
-	public void setTypeState(Map<Integer, OrderStateRequest> typeState) {
-		this.typeState = typeState;
-	}
+    public void setBusinessLine(int businessLine) {
+        this.businessLine = businessLine;
+    }
 
-	public Integer getState1() {
-		return state1;
-	}
+    public Map<Integer, OrderStateRequest> getTypeState() {
+        return typeState;
+    }
 
-	public void setState1(int state1) {
-		this.state1 = state1;
-		this.typeState.put(1, OrderStatusEnum.get(state1));
+    public void setTypeState(Map<Integer, OrderStateRequest> typeState) {
+        this.typeState = typeState;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getState1() {
+        return state1;
+    }
+
+    public void setState1(int state1) {
+        this.state1 = state1;
+        this.typeState.put(1, OrderStatusEnum.get(state1));
 //        // 观察者 - 拉模式
 //        setChanged(); // 状态改变必须调用
 //        notifyObservers(/*state*/);
-		// 事件方式
+        // 事件方式
 //        ApplicationContext.publishEvent(new ApplicationEvent(this));
-	}
+    }
 
-	public int getState2() {
-		return state2;
-	}
+    public int getState2() {
+        return state2;
+    }
 
-	public void setState2(int state2) {
-		this.state2 = state2;
-		this.typeState.put(2, PayStatusEnum.get(state2));
-	}
+    public void setState2(int state2) {
+        this.state2 = state2;
+        this.typeState.put(2, PayStatusEnum.get(state2));
+    }
 
-	public int getState3() {
-		return state3;
-	}
+    public int getState3() {
+        return state3;
+    }
 
-	public void setState3(int state3) {
-		this.state3 = state3;
-		this.typeState.put(3, LogisticsStatusEnum.get(state3));
-	}
+    public void setState3(int state3) {
+        this.state3 = state3;
+        this.typeState.put(3, LogisticsStatusEnum.get(state3));
+    }
 }

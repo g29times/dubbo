@@ -4,10 +4,11 @@ import cn.huimin100.tc.owf.statemachine.order.RequestContext;
 import cn.huimin100.tc.owf.statemachine.order.StateRequest;
 import cn.huimin100.tc.owf.statemachine.order.context.OrderRequestContext;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
-import cn.huimin100.tc.owf.statemachine.order.experiment.processor.AbstractProcessor;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
+
+import java.util.Map;
 
 /**
  * . _________         .__   _____   __
@@ -25,7 +26,7 @@ import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
  * @see Object
  * @since 1.0
  */
-public class OrderCreate /*extends AbstractProcessor<Order> */implements OrderStateRequest {
+public class OrderCreate /*extends AbstractProcessor<Order> */ implements OrderStateRequest {
 
     private final int value = 11;
 
@@ -62,22 +63,26 @@ public class OrderCreate /*extends AbstractProcessor<Order> */implements OrderSt
     }
 
     @Override
+    public Boolean isHandler(Order order) {
+        Map<Integer, OrderStateRequest> typeState = order.getTypeState();
+        return order.getBusinessLine() == 1 && (typeState.get(1) == null
+                || typeState.get(1).getStateValue() == OrderStatusEnum.CREATE.getCode())
+                && typeState.get(2) == null && typeState.get(3) == null;
+    }
+
+    @Override
     public void reverse(Order order) {
         StateRequest<Order> prev = OrderStatusEnum.CANCEL.getState();
         getContext().setState(prev);
         System.out.println(getContext() + " - " + order + " -> 取消订单");
-
-//        Map<Integer, StateRequest<Order>> map = order.getTypeState();
-//        map.put(1, prev);
-//        order.setTypeState(map);
         order.setState1(prev.getStateValue());
     }
 
     @Override
     public void pre(Order order) {
-        getContext().setState(this);
+//        getContext().setState(this);
         System.out.println(getContext() + " - " + order + " -> 创建订单");
-        order.setState1(value);
+//        order.setState1(value);
     }
 
     @Override
@@ -99,16 +104,12 @@ public class OrderCreate /*extends AbstractProcessor<Order> */implements OrderSt
         order.setState2(next.getStateValue());
     }
 
-    //    public List<OrderStateRequest> getParents() {
-//
-//    }
-//
+    /**
+     * 实现预编排
+     */
 //    @Override
-//    public boolean check(Order order) {
-//        // 111 222 333 | 123
-//        if(getParents().containsAll(order.getTypeState().values())) {
-//            return true;
-//        }
+//    public void process(Order order) {
+//        // 1 验证 - 2 处理 - 3 变更状态 - 4 通知
+//        change(order);
 //    }
-
 }

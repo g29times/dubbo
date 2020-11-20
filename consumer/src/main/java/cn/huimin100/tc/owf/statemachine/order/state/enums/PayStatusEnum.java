@@ -70,12 +70,16 @@ public enum PayStatusEnum {
 
     private final OrderStateRequest state;
 
-    private static Map<Integer, PayStatusEnum> enumMaps = new HashMap<>();
+    private static final Map<Integer, OrderStateRequest> enumMaps = new HashMap<>();
 
     static {
         for (PayStatusEnum e : PayStatusEnum.values()) {
-            enumMaps.put(e.getCode(), e);
+            enumMaps.put(e.getCode(), e.getState());
         }
+    }
+
+    public static Map<Integer, OrderStateRequest> getEnumMaps() {
+        return enumMaps;
     }
 
     /**
@@ -85,7 +89,7 @@ public enum PayStatusEnum {
      * @return 名称
      */
     public static OrderStateRequest get(Integer id) {
-        return enumMaps.get(id).getState();
+        return enumMaps.get(id);
     }
 
     public int getCode() {

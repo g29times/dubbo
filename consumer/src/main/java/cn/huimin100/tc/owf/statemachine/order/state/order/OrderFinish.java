@@ -5,6 +5,11 @@ import cn.huimin100.tc.owf.statemachine.order.context.OrderRequestContext;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
 import cn.huimin100.tc.owf.statemachine.order.experiment.processor.AbstractProcessor;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.LogisticsStatusEnum;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
+
+import java.util.Map;
 
 /**
  * . _________         .__   _____   __
@@ -22,7 +27,7 @@ import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
  * @see Object
  * @since 1.0
  */
-public class OrderFinish extends AbstractProcessor<Order> implements OrderStateRequest {
+public class OrderFinish /*extends AbstractProcessor<Order> */implements OrderStateRequest {
 
     private final int value = 17;
 
@@ -59,6 +64,14 @@ public class OrderFinish extends AbstractProcessor<Order> implements OrderStateR
     }
 
     @Override
+    public Boolean isHandler(Order order) {
+        Map<Integer, OrderStateRequest> typeState = order.getTypeState();
+        return typeState.get(1).getStateValue() == OrderStatusEnum.FINISH.getCode()
+                && typeState.get(2).getStateValue() == PayStatusEnum.WAITING.getCode()
+                && typeState.get(3).getStateValue() == LogisticsStatusEnum.PICK.getCode();
+    }
+
+    @Override
     public void pre(Order order) {
 
     }
@@ -74,8 +87,5 @@ public class OrderFinish extends AbstractProcessor<Order> implements OrderStateR
                 " <" + getContext() + "> "/* + order*/ + " 已完成 没有后续节点");
     }
 
-    @Override
-    public void process(Order domain) {
-        change(domain);
-    }
+
 }

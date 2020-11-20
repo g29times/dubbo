@@ -54,12 +54,16 @@ public enum LogisticsStatusEnum {
 
     private final OrderStateRequest state;
 
-    private static Map<Integer, LogisticsStatusEnum> enumMaps = new HashMap<>();
+    private static Map<Integer, OrderStateRequest> enumMaps = new HashMap<>();
 
     static {
         for (LogisticsStatusEnum e : LogisticsStatusEnum.values()) {
-            enumMaps.put(e.getCode(), e);
+            enumMaps.put(e.getCode(), e.getState());
         }
+    }
+
+    public static Map<Integer, OrderStateRequest> getEnumMaps() {
+        return enumMaps;
     }
 
     /**
@@ -69,7 +73,7 @@ public enum LogisticsStatusEnum {
      * @return 名称
      */
     public static OrderStateRequest get(Integer id) {
-        return enumMaps.get(id).getState();
+        return enumMaps.get(id);
     }
 
     public int getCode() {

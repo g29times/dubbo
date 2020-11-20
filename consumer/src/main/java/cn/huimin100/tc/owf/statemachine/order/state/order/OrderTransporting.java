@@ -72,8 +72,5 @@ public class OrderTransporting implements OrderStateRequest {
 
     }
 
-    @Override
-    public void process(Order domain) {
-        change(domain);
-    }
+
 }

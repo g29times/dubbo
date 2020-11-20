@@ -5,6 +5,8 @@ import cn.huimin100.tc.owf.statemachine.order.context.OrderRequestContext;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
 
+import java.util.Map;
+
 /**
  * . _________         .__   _____   __
  * ./   _____/__  _  __|__|_/ ____\_/  |_
@@ -72,8 +74,5 @@ public class PayDriver implements OrderStateRequest {
 
     }
 
-    @Override
-    public void process(Order domain) {
-        change(domain);
-    }
+
 }

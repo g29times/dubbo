@@ -4,9 +4,12 @@ import cn.huimin100.tc.owf.statemachine.order.RequestContext;
 import cn.huimin100.tc.owf.statemachine.order.StateRequest;
 import cn.huimin100.tc.owf.statemachine.order.context.OrderRequestContext;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
-import cn.huimin100.tc.owf.statemachine.order.experiment.processor.AbstractProcessor;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.LogisticsStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
+import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
+
+import java.util.Map;
 
 /**
  * . _________         .__   _____   __
@@ -24,7 +27,7 @@ import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
  * @see Object
  * @since 1.0
  */
-public class LogisticsPick /*extends AbstractProcessor<Order> */implements OrderStateRequest {
+public class LogisticsPick implements OrderStateRequest {
 
     private final int value = 32;
 
@@ -61,10 +64,16 @@ public class LogisticsPick /*extends AbstractProcessor<Order> */implements Order
     }
 
     @Override
+    public Boolean isHandler(Order order) {
+        Map<Integer, OrderStateRequest> typeState = order.getTypeState();
+        return typeState.get(1).getStateValue() == OrderStatusEnum.CREATE.getCode()
+                && typeState.get(2).getStateValue() == PayStatusEnum.WAITING.getCode()
+                && typeState.get(3).getStateValue() == LogisticsStatusEnum.PICK.getCode();
+    }
+
+    @Override
     public void pre(Order order) {
-        getContext().setState(this);
         System.out.println(getContext() + " - " + order + " -> 已拣货");
-        order.setState1(value);
     }
 
     @Override
@@ -78,15 +87,7 @@ public class LogisticsPick /*extends AbstractProcessor<Order> */implements Order
         getContext().setState(next);
         System.out.println(System.currentTimeMillis() + " [" + Thread.currentThread().getName() + "]" +
                 " <" + getContext() + "> "/* + order*/ + " 已拣货 -> 已送达（已完成）");
-
-//        Map<Integer, StateRequest<Order>> map = order.getTypeState();
-//        map.put(1, next);
-//        order.setTypeState(map);
         order.setState1(next.getStateValue());
     }
 
-    @Override
-    public void process(Order order) {
-        change(order);
-    }
 }

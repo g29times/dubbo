@@ -1,12 +1,12 @@
 package cn.huimin100.tc.owf.statemachine.order.state;
 
+import cn.huimin100.tc.owf.statemachine.Demo;
 import cn.huimin100.tc.owf.statemachine.order.StateRequest;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.LogisticsStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +26,7 @@ import java.util.Map;
  * @see Object
  * @since 1.0
  */
+@Demo
 public class StateMachine {
 
     private int businessLine;

@@ -1,16 +1,17 @@
 package cn.huimin100.tc.owf.statemachine.order.state.pay;
 
-import cn.huimin100.tc.owf.statemachine.order.StateRequest;
 import cn.huimin100.tc.owf.client.PayServiceApi;
+import cn.huimin100.tc.owf.statemachine.order.RequestContext;
+import cn.huimin100.tc.owf.statemachine.order.StateRequest;
+import cn.huimin100.tc.owf.statemachine.order.context.OrderRequestContext;
 import cn.huimin100.tc.owf.statemachine.order.domain.Bill;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
-import cn.huimin100.tc.owf.statemachine.order.experiment.processor.AbstractProcessor;
-import cn.huimin100.tc.owf.statemachine.order.RequestContext;
-import cn.huimin100.tc.owf.statemachine.order.context.OrderRequestContext;
+import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.LogisticsStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
-import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
+
+import java.util.Map;
 
 /**
  * . _________         .__   _____   __
@@ -28,7 +29,7 @@ import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
  * @see Object
  * @since 1.0
  */
-public class PayWaiting /*extends AbstractProcessor<Order> */implements OrderStateRequest {
+public class PayWaiting implements OrderStateRequest {
 
     private final int value = 21;
 
@@ -43,7 +44,7 @@ public class PayWaiting /*extends AbstractProcessor<Order> */implements OrderSta
 
     @Override
     public void setContext(RequestContext<Order> context) {
-        this.context = (OrderRequestContext)context;
+        this.context = (OrderRequestContext) context;
     }
 
     @Override
@@ -65,10 +66,10 @@ public class PayWaiting /*extends AbstractProcessor<Order> */implements OrderSta
     }
 
     @Override
-    public void pre(Order order) {
-        getContext().setState(this);
-        System.out.println(getContext() + " - " + order + " -> 待支付");
-        order.setState1(value);
+    public Boolean isHandler(Order order) {
+        Map<Integer, OrderStateRequest> typeState = order.getTypeState();
+        return typeState.get(1).getStateValue() == OrderStatusEnum.CREATE.getCode()
+                && typeState.get(2).getStateValue() == PayStatusEnum.WAITING.getCode() && typeState.get(3) == null;
     }
 
     @Override
@@ -77,24 +78,25 @@ public class PayWaiting /*extends AbstractProcessor<Order> */implements OrderSta
         getContext().setState(prev);
         System.out.println(System.currentTimeMillis() + " [" + Thread.currentThread().getName() + "]" +
                 " <" + getContext() + "> "/* + order*/ + " -> 支付取消");
-
-//        Map<Integer, StateRequest<Order>> map = order.getTypeState();
-//        map.put(2, prev);
-//        order.setTypeState(map);
         order.setState2(prev.getStateValue());
+    }
+
+    @Override
+    public void pre(Order order) {
+        System.out.println(getContext() + " - " + order + " -> 待支付");
     }
 
     @Override
     public void change(Order order) {
         if (order.getTypeState() != null
                 && order.getTypeState().get(1).getStateValue() == OrderStatusEnum.CANCEL.getState().getStateValue()
-                /*order.getState().equals(OrderStatusEnum.CANCEL.getState().getStateValue())*/) {
+            /*order.getState().equals(OrderStatusEnum.CANCEL.getState().getStateValue())*/) {
             System.out.println("支付已取消 无法继续！");
             return;
         }
         if (order.getTypeState() != null
                 && order.getTypeState().get(2).getStateValue() != PayStatusEnum.WAITING.getState().getStateValue()
-            ) {
+        ) {
             System.out.println("支付状态跳号 无法继续！期望值：" + PayStatusEnum.WAITING.getState() + "，实际值："
                     + order.getTypeState().get(2).getStateValue());
             return;
@@ -104,20 +106,11 @@ public class PayWaiting /*extends AbstractProcessor<Order> */implements OrderSta
             StateRequest<Order> next = LogisticsStatusEnum.PICK.getState();
             getContext().setState(next);
             System.out.println(System.currentTimeMillis() + " [" + Thread.currentThread().getName() + "]" +
-                    " <" + getContext() + "> " /*+ order */+ " 已支付 -> 运送中");
-
-//            Map<Integer, StateRequest<Order>> map = order.getTypeState();
-//            map.put(3, next);
-//            order.setTypeState(map);
+                    " <" + getContext() + "> " /*+ order */ + " 已支付 -> 运送中");
             order.setState3(next.getStateValue());
         } else {
             reverse(order);
         }
-    }
-
-    @Override
-    public void process(Order order) {
-        change(order);
     }
 
 }

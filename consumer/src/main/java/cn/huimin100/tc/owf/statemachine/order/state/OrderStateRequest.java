@@ -22,21 +22,22 @@ import cn.huimin100.tc.owf.statemachine.order.domain.Order;
 public interface OrderStateRequest extends StateRequest<Order> {
 
     /**
-     * 更新状态
+     * 判断是否当前节点执行
+     *
+     * @param order@return 是否当前节点执行
      */
-    void pre(Order order);
-
-    default void after(Order order) {
-        System.out.println(order);
+    default Boolean isHandler(Order order) {
+        return false;
     }
 
     /**
-     * 更新逆向状态
+     * 逆向
      */
     void reverse(Order order);
 
     @Override
     default void process(Order order) {
+        // TODO 重点配置
         // 1 验证 - 2 处理 - 3 变更状态 - 4 通知
         if(check(order)) {
             pre(order);

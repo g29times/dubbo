@@ -26,7 +26,7 @@ public class PayServiceApi {
 
     public Boolean addOrUpdate(Bill bill) {
         boolean result = Math.random() > 0.5;
-        System.out.println("PayServiceApi addOrUpdate " + bill + " " + result);
+        System.out.println("PayServiceApi addOrUpdate " + bill + " 【" + result + "】");
         return result;
     }
 

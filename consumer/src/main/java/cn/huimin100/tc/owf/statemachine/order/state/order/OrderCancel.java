@@ -3,17 +3,15 @@ package cn.huimin100.tc.owf.statemachine.order.state.order;
 import cn.huimin100.tc.owf.statemachine.order.RequestContext;
 import cn.huimin100.tc.owf.statemachine.order.context.OrderRequestContext;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
-import cn.huimin100.tc.owf.statemachine.order.experiment.processor.AbstractProcessor;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.LogisticsStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.OrderStatusEnum;
 import cn.huimin100.tc.owf.statemachine.order.state.enums.PayStatusEnum;
-import cn.huimin100.tc.owf.statemachine.order.state.logistics.LogisticsPick;
-import cn.huimin100.tc.owf.statemachine.order.state.pay.PayWaiting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * . _________         .__   _____   __
@@ -31,13 +29,18 @@ import java.util.List;
  * @see Object
  * @since 1.0
  */
-public class OrderCancel /*extends AbstractProcessor<Order> */implements OrderStateRequest {
+public class OrderCancel implements OrderStateRequest {
 
     private final int value = 18;
 
     private final String desc = "已取消";
 
     private OrderRequestContext context;
+
+    private final ArrayList<OrderStateRequest> parents = new ArrayList<>(Arrays.asList(
+            OrderStatusEnum.CREATE.getState(),
+            PayStatusEnum.WAITING.getState(),
+            LogisticsStatusEnum.PICK.getState()));
 
     @Override
     public OrderRequestContext getContext() {
@@ -68,29 +71,32 @@ public class OrderCancel /*extends AbstractProcessor<Order> */implements OrderSt
     }
 
     @Override
-    public void pre(Order order) {
-
+    public Boolean isHandler(Order order) {
+        Map<Integer, OrderStateRequest> typeState = order.getTypeState();
+        return typeState.get(1) != null && typeState.get(1).getStateValue() == OrderStatusEnum.CANCEL.getCode();
     }
 
     @Override
-    public void reverse(Order order) {
-
-    }
-
-    @Override
-    public void change(Order order) {
-
-    }
-
-    public List<OrderStateRequest> getParents() {
-        return new ArrayList<>(Arrays.asList(OrderStatusEnum.CREATE.getState(), PayStatusEnum.WAITING.getState(), LogisticsStatusEnum.PICK.getState()));
-    }
+    public void reverse(Order order) {}
 
     @Override
     public boolean check(Order order) {
         return getParents().contains(order.getTypeState().get(1)) ||
                 getParents().contains(order.getTypeState().get(2)) ||
                 getParents().contains(order.getTypeState().get(3));
+    }
+
+    @Override
+    public List<OrderStateRequest> getParents() {
+        return parents;
+    }
+
+    @Override
+    public void pre(Order order) {}
+
+    @Override
+    public void change(Order order) {
+        System.out.println(getContext() + " - " + order + " -> 订单取消");
     }
 
 }

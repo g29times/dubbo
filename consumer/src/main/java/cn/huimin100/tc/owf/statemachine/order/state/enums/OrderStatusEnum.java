@@ -1,7 +1,7 @@
 package cn.huimin100.tc.owf.statemachine.order.state.enums;
 
-import cn.huimin100.tc.owf.statemachine.order.state.order.*;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
+import cn.huimin100.tc.owf.statemachine.order.state.order.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +15,10 @@ import java.util.Map;
  * @create: 2020-11-3
  */
 public enum OrderStatusEnum {
+    /**
+     * ToC订单创建
+     */
+    CREATE_TOC(10, new OrderCreateToC()),
     /**
      * 订单创建
      */
@@ -66,12 +70,16 @@ public enum OrderStatusEnum {
 
     private final OrderStateRequest state;
 
-    private static Map<Integer, OrderStatusEnum> enumMaps = new HashMap<>();
+    private static Map<Integer, OrderStateRequest> enumMaps = new HashMap<>();
 
     static {
         for (OrderStatusEnum e : OrderStatusEnum.values()) {
-            enumMaps.put(e.getCode(), e);
+            enumMaps.put(e.getCode(), e.getState());
         }
+    }
+
+    public static Map<Integer, OrderStateRequest> getEnumMaps() {
+        return enumMaps;
     }
 
     /**
@@ -81,7 +89,7 @@ public enum OrderStatusEnum {
      * @return 名称
      */
     public static OrderStateRequest get(Integer id) {
-        return enumMaps.get(id).getState();
+        return enumMaps.get(id);
     }
 
     public int getCode() {

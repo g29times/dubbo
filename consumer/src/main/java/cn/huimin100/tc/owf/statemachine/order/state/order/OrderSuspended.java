@@ -72,8 +72,5 @@ public class OrderSuspended implements OrderStateRequest {
 
     }
 
-    @Override
-    public void process(Order domain) {
-        change(domain);
-    }
+
 }

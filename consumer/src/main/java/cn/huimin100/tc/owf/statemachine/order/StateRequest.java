@@ -1,5 +1,11 @@
 package cn.huimin100.tc.owf.statemachine.order;
 
+import cn.huimin100.tc.owf.statemachine.order.domain.Order;
+import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * . _________         .__   _____   __
  * ./   _____/__  _  __|__|_/ ____\_/  |_
@@ -19,6 +25,13 @@ package cn.huimin100.tc.owf.statemachine.order;
 public interface StateRequest<T> extends Request<T> {
 
     /**
+     * 获取可能来自的节点
+     */
+    default List<OrderStateRequest> getParents() {
+         return new ArrayList<>();
+    }
+
+    /**
      * 检查
      */
     default boolean check(T domain) {
@@ -26,9 +39,21 @@ public interface StateRequest<T> extends Request<T> {
     }
 
     /**
+     * 前置
+     */
+    void pre(Order order);
+
+    /**
      * 改状态
      */
     void change(T domain);
+
+    /**
+     * 后置
+     */
+    default void after(Order order) {
+        System.out.println(order);
+    }
 
     /**
      * 获取请求对应的上下文
@@ -47,8 +72,6 @@ public interface StateRequest<T> extends Request<T> {
         return getContext().getDomainId();
     }
 
-//    T getDomain();
-
     /**
      * 获取当前状态
      *
@@ -60,12 +83,5 @@ public interface StateRequest<T> extends Request<T> {
      * 获取当前状态描述
      */
     String getStateDesc();
-
-    /**
-     * 设置状态
-     *
-     * @param value 1 Create 2 Finish 3 Return
-     */
-//    void setStateValue(int value);
 
 }

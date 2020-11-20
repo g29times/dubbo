@@ -72,8 +72,5 @@ public class OrderAuditing implements OrderStateRequest {
 
     }
 
-    @Override
-    public void process(Order domain) {
-        change(domain);
-    }
+
 }

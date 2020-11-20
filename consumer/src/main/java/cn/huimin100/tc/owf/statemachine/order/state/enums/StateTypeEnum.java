@@ -1,10 +1,11 @@
 package cn.huimin100.tc.owf.statemachine.order.state.enums;
 
-import cn.huimin100.tc.owf.statemachine.order.StateRequest;
 import cn.huimin100.tc.owf.statemachine.order.domain.Order;
 import cn.huimin100.tc.owf.statemachine.order.state.OrderStateRequest;
+import cn.huimin100.tc.owf.statemachine.order.state.order.OrderCancel;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,81 +18,66 @@ import java.util.Map;
  */
 public enum StateTypeEnum {
 
-	/**
-	 * 订单
-	 */
-	ORDER(1, "Order"),
+    /**
+     * 订单
+     */
+    ORDER(1, OrderStatusEnum.getEnumMaps()),
 
-	/**
-	 * 支付
-	 */
-	PAY(2, "Pay"),
+    /**
+     * 支付
+     */
+    PAY(2, PayStatusEnum.getEnumMaps()),
 
-	/**
-	 * 物流
-	 */
-	LOGISTICS(3, "Logistics");
+    /**
+     * 物流
+     */
+    LOGISTICS(3, LogisticsStatusEnum.getEnumMaps());
 
-	StateTypeEnum(int code, String state) {
-		this.code = code;
-		this.state = state;
-	}
+    StateTypeEnum(int code, Map<Integer, OrderStateRequest> state) {
+        this.code = code;
+        this.state = state;
+    }
 
-	private final int code;
+    private final int code;
 
-	private final String state;
+    private final Map<Integer, OrderStateRequest> state;
 
-	private static Map<Integer, StateTypeEnum> enumMaps = new HashMap<>();
+    public int getCode() {
+        return code;
+    }
 
-	static {
-		for (StateTypeEnum e : StateTypeEnum.values()) {
-			enumMaps.put(e.getCode(), e);
-		}
-	}
+    public Map<Integer, OrderStateRequest> getState() {
+        return state;
+    }
 
-	/**
-	 * 根据id查询名称
-	 *
-	 * @param id id
-	 * @return 名称
-	 */
-	public static String get(Integer id) {
-		return enumMaps.get(id).getState();
-	}
+    private static Map<Integer, OrderStateRequest> enumMaps = new HashMap<>();
 
-	public int getCode() {
-		return code;
-	}
+    static {
+        for (StateTypeEnum e : StateTypeEnum.values()) {
+            e.getState().forEach(enumMaps::put);
+        }
+    }
 
-	public String getState() {
-		return state;
-	}
+    /**
+     * 核心 规则编排查找器
+     * 1,1,1 -> OrderCreate
+     *
+     * @return 状态执行器
+     */
+    public static OrderStateRequest get(Order order) {
+        return get(null, order);
+    }
 
-	/**
-	 * 核心 规则编排查找器
-	 * TODO 策略
-	 * 1,1,1 -> OrderCreate
-	 *
-	 * @return 状态执行器
-	 */
-	public static OrderStateRequest get(Map<Integer, OrderStateRequest> typeState) {
-		if (typeState.get(1).getStateValue() == OrderStatusEnum.CREATE.getCode()
-				&& typeState.get(2) == null && typeState.get(3)== null) {
-			return OrderStatusEnum.CREATE.getState();
-		} else if (typeState.get(1).getStateValue() == OrderStatusEnum.CREATE.getCode()
-				&& typeState.get(2).getStateValue() == PayStatusEnum.WAITING.getCode() && typeState.get(3)== null) {
-			return PayStatusEnum.WAITING.getState();
-		} else if (typeState.get(1).getStateValue() == OrderStatusEnum.CREATE.getCode()
-				&& typeState.get(2).getStateValue() == PayStatusEnum.WAITING.getCode()
-				&& typeState.get(3).getStateValue() == LogisticsStatusEnum.PICK.getCode()) {
-			return LogisticsStatusEnum.PICK.getState();
-		} else if (typeState.get(1).getStateValue() == OrderStatusEnum.FINISH.getCode()
-				&& typeState.get(2).getStateValue() == PayStatusEnum.WAITING.getCode()
-				&& typeState.get(3).getStateValue() == LogisticsStatusEnum.PICK.getCode()) {
-			return OrderStatusEnum.FINISH.getState();
-		} else {
-			return OrderStatusEnum.CANCEL.getState();
-		}
-	}
+    /**
+     * 核心 规则编排查找器
+     * 1,1,1 -> OrderCreate
+     *
+     * @return 状态执行器
+     */
+    public static OrderStateRequest get(List<OrderStateRequest> strategies, Order order) {
+        return (strategies != null ? strategies : enumMaps.values()).stream().filter(s ->
+                // TODO 重点配置 默认订单取消
+                s.isHandler(order)).findFirst().orElse(new OrderCancel());
+    }
 
 }
